@@ -25,14 +25,15 @@ import 'package:nim_contactkit_ui/contact_kit_client.dart';
 import 'package:nim_conversationkit_ui/conversation_kit_client.dart';
 import 'package:nim_searchkit_ui/search_kit_client.dart';
 import 'package:nim_teamkit_ui/team_kit_client.dart';
-import 'package:provider/provider.dart';
 import 'package:nim_chatkit/manager/ai_user_manager.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:netease_common_ui/base/default_language.dart';
 import 'package:nim_chatkit/repo/config_repo.dart';
 import 'package:netease_callkit_ui/ne_callkit_ui.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
+
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   // WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
@@ -42,6 +43,10 @@ void main() {
   //       aMapIOSKey: IMDemoConfig.AMapIOS,
   //       aMapWebKey: IMDemoConfig.AMapWeb);
   // });
+    // 设置日志级别
+  if (kDebugMode) {
+    print('🔥 Debug mode enabled');
+  }
   runApp(const MainApp());
 }
 

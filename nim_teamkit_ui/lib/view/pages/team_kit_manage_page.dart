@@ -251,7 +251,7 @@ class _TeamKitManagerPageState extends State<TeamKitManagerPage> {
                 const TextStyle(fontSize: 14, color: CommonColors.color_999999),
           ),
           trailing: CupertinoSwitch(
-            activeColor: CommonColors.color_337eff,
+            activeTrackColor: CommonColors.color_337eff,
             onChanged: (bool value) async {
               if (!await haveConnectivity()) {
                 return;
@@ -276,7 +276,7 @@ class _TeamKitManagerPageState extends State<TeamKitManagerPage> {
                 const TextStyle(fontSize: 14, color: CommonColors.color_999999),
           ),
           trailing: CupertinoSwitch(
-            activeColor: CommonColors.color_337eff,
+            activeTrackColor: CommonColors.color_337eff,
             onChanged: (bool value) async {
               if (!await haveConnectivity()) {
                 return;

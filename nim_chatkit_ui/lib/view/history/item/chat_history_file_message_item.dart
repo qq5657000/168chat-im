@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
@@ -14,8 +13,6 @@ import 'package:nim_chatkit/repo/chat_service_observer_repo.dart';
 import 'package:nim_chatkit_ui/media/audio_player.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../../../chat_kit_client.dart';
 import '../../../helper/text_utils.dart';

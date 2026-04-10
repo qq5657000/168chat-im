@@ -104,7 +104,7 @@ class _ContactKitDetailPageState extends State<ContactKitDetailPage> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 20),
             title: Text(S.of(context).contactAddToBlacklist),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) async {
                 if (!await haveConnectivity()) {
                   return;

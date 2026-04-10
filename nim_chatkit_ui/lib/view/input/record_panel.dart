@@ -8,7 +8,6 @@ import 'dart:io';
 import 'package:flutter_sound/flutter_sound.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:netease_common/netease_common.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

@@ -15,7 +15,6 @@ import 'package:nim_chatkit/repo/chat_message_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nim_core_v2/nim_core.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../conversation_kit_client.dart';
 import '../l10n/S.dart';

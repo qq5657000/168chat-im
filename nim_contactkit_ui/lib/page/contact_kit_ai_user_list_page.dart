@@ -7,13 +7,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:netease_common_ui/ui/avatar.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:netease_common_ui/widgets/transparent_scaffold.dart';
-import 'package:nim_chatkit/model/contact_info.dart';
 import 'package:nim_chatkit/router/imkit_router_factory.dart';
-import 'package:nim_chatkit/service_locator.dart';
-import 'package:nim_chatkit/services/contact/contact_provider.dart';
 import 'package:nim_contactkit_ui/contact_kit_client.dart';
 import 'package:nim_contactkit_ui/page/viewmodel/ai_user_list_viewmodel.dart';
-import 'package:nim_contactkit_ui/page/viewmodel/black_list_viewmodel.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +29,7 @@ class _AIUserListPageState extends State<ContactKitAIUserListPage> {
   Widget _buildItem(BuildContext context, NIMAIUser user) {
     return InkWell(
         onTap: () {
-          goToContactDetail(context, user.accountId!!);
+          goToContactDetail(context, user.accountId!);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),

@@ -13,7 +13,6 @@ import 'package:nim_chatkit/services/contact/contact_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nim_core_v2/nim_core.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../../chat_kit_client.dart';
 import '../../l10n/S.dart';

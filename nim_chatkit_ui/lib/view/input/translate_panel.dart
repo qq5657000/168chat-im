@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +20,6 @@ import 'package:provider/provider.dart';
 
 import '../../chat_kit_client.dart';
 import '../../view_model/chat_view_model.dart';
-import 'emoji/emoji.dart';
 
 class TranslatePanel extends StatefulWidget {
   const TranslatePanel(

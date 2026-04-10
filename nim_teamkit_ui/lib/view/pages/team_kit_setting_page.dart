@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ import 'package:netease_common_ui/widgets/update_text_info_page.dart';
 import 'package:nim_chatkit/chatkit_utils.dart';
 import 'package:nim_chatkit/model/contact_info.dart';
 import 'package:nim_chatkit/model/team_models.dart';
-import 'package:nim_chatkit/router/imkit_router_constants.dart';
 import 'package:nim_chatkit/router/imkit_router_factory.dart';
 import 'package:nim_chatkit/service_locator.dart';
 import 'package:nim_chatkit/services/login/im_login_service.dart';
@@ -313,7 +311,7 @@ class _TeamSettingPageState extends State<TeamSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) {
                 context
                     .read<TeamSettingViewModel>()
@@ -328,7 +326,7 @@ class _TeamSettingPageState extends State<TeamSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) {
                 context
                     .read<TeamSettingViewModel>()
@@ -345,7 +343,7 @@ class _TeamSettingPageState extends State<TeamSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) {
                 context
                     .read<TeamSettingViewModel>()
@@ -360,7 +358,7 @@ class _TeamSettingPageState extends State<TeamSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) {
                 context
                     .read<TeamSettingViewModel>()
@@ -430,7 +428,7 @@ class _TeamSettingPageState extends State<TeamSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) {
                 context
                     .read<TeamSettingViewModel>()

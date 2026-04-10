@@ -9,7 +9,6 @@ import 'package:netease_common_ui/ui/avatar.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:netease_common_ui/utils/text_search.dart';
 import 'package:netease_common_ui/widgets/search_page.dart';
-import 'package:nim_chatkit/router/imkit_router_constants.dart';
 import 'package:nim_chatkit/router/imkit_router_factory.dart';
 import 'package:nim_chatkit/services/message/chat_message.dart';
 import 'package:nim_chatkit/repo/chat_message_repo.dart';

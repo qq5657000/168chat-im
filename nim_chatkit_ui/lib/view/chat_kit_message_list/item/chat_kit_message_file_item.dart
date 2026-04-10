@@ -15,7 +15,6 @@ import 'package:nim_chatkit_ui/media/audio_player.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../../../chat_kit_client.dart';
 import '../../../helper/text_utils.dart';

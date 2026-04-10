@@ -14,7 +14,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../chat_kit_client.dart';
 import '../l10n/S.dart';

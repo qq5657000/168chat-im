@@ -10,7 +10,7 @@
 	<string>enterprise</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.netease.yunxin.app.flutter.im</key>
+		<key>com.hestia.n168chat.app.flutter.im</key>
 		<string>im_flutter_uikit_dis</string>
 	</dict>
 	<key>signingCertificate</key>

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '2.1.0'
     repositories {
         google()
         mavenCentral()
@@ -34,8 +34,8 @@ subprojects {
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 35
-                buildToolsVersion "34.0.0"
+                compileSdkVersion 36
+                buildToolsVersion "36.0.0"
             }
         }
     }}
@@ -44,7 +44,7 @@ subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
             android {
-                compileSdkVersion 35
+                compileSdkVersion 36
                 compileOptions {
                     sourceCompatibility JavaVersion.VERSION_17
                     targetCompatibility JavaVersion.VERSION_17

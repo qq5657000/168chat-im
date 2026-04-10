@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-package com.netease.yunxin.app.flutter.im
+package com.hestia.n168chat.app.flutter.im
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,7 +23,7 @@ const val EXTRA_NOTIFY_SESSION_CONTENT = "com.netease.nim.EXTRA.NOTIFY_SESSION_C
 class MainActivity : FlutterActivity() {
 
     // MethodChannel的名称
-    private val channelName = "com.netease.yunxin.app.flutter.im/channel"
+    private val channelName = "com.hestia.n168chat.app.flutter.im/channel"
 
     private val methodName = "pushMessage"
 

@@ -31,6 +31,11 @@ class ActionItem {
   /// from 0
   int? index;
 
+  /// 限制此 Action 仅在特定会话类型中显示。
+  /// 为 null 或空列表时不限制（所有类型都显示）。
+  /// 例如：[NIMConversationType.team] 表示仅群聊中显示。
+  List<NIMConversationType>? conversationTypes;
+
   ActionItem(
       {required this.type,
       required this.icon,
@@ -41,6 +46,7 @@ class ActionItem {
       this.permissionTitle,
       this.permissionDesc,
       this.index,
+      this.conversationTypes,
       this.deniedTip});
 }
 

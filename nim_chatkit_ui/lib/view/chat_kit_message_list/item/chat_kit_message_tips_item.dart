@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:netease_common/netease_common.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:nim_chatkit/router/imkit_router_constants.dart';
 import 'package:nim_chatkit/manager/ai_error_code.dart';

@@ -139,6 +139,17 @@ class ChatUIConfig {
   ///如果返回false，此方法处理万之后 会退回到根目录
   bool Function()? onTeamDismissOrLeave;
 
+  /// 在聊天页消息列表顶部（AppBar 之下）注入自定义 Widget 的构建函数。
+  /// 常用于：群聊课堂横幅（GroupRoomBanner）等全局置顶提示。
+  ///
+  /// 参数：
+  ///   conversationId   — 当前会话 ID
+  ///   conversationType — 会话类型（p2p / team / ...）
+  ///
+  /// 返回 null 表示不注入任何内容。
+  Widget? Function(String conversationId,
+      NIMConversationType conversationType)? topWidgetBuilder;
+
   ChatUIConfig(
       {this.showTeamMessageStatus,
       this.receiveMessageBg,
@@ -171,7 +182,8 @@ class ChatUIConfig {
       this.showTimeInterval = 5 * 60 * 1000,
       this.isShowAvatar,
       this.onTeamDismissOrLeave,
-      this.messageLinkColor});
+      this.messageLinkColor,
+      this.topWidgetBuilder});
 }
 
 ///消息点击回调

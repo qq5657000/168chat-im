@@ -61,41 +61,39 @@ class ChatKitMessagePopMenu {
       final widgetBottom = widgetTop + size.height;
       // 检查是否在可滚动容器内
       final scrollable = Scrollable.of(context);
-      if (scrollable != null) {
-        final scrollPosition = scrollable.position;
-        final scrollOffset = scrollPosition.pixels;
-        final viewportHeight = scrollPosition.viewportDimension;
+      final scrollPosition = scrollable.position;
+      final scrollOffset = scrollPosition.pixels;
+      final viewportHeight = scrollPosition.viewportDimension;
 
-        // 计算视口边界
-        final viewportTop = scrollOffset;
-        final viewportBottom = scrollOffset + viewportHeight;
+      // 计算视口边界
+      final viewportTop = scrollOffset;
+      final viewportBottom = scrollOffset + viewportHeight;
 
-        // 获取 Widget 在滚动容器内的相对位置
-        final scrollableRenderBox =
-            scrollable.context.findRenderObject() as RenderBox;
-        final localOffset =
-            box.localToGlobal(Offset.zero, ancestor: scrollableRenderBox);
-        final widgetScrollTop = scrollOffset + localOffset.dy;
-        final widgetScrollBottom = widgetScrollTop + size.height;
+      // 获取 Widget 在滚动容器内的相对位置
+      final scrollableRenderBox =
+          scrollable.context.findRenderObject() as RenderBox;
+      final localOffset =
+          box.localToGlobal(Offset.zero, ancestor: scrollableRenderBox);
+      final widgetScrollTop = scrollOffset + localOffset.dy;
+      final widgetScrollBottom = widgetScrollTop + size.height;
 
-        // 判断可见性
-        // 增加判断：只有当 viewportHeight 接近屏幕高度时（说明不是 shrinkWrap 导致的短列表），才执行这个逻辑
-        // 或者当 viewportHeight 足够大时
-        if (viewportHeight > MediaQuery.of(context).size.height * 0.8) {
-          if (popupDirection == TooltipDirection.down &&
-              (widgetScrollBottom + 30) > viewportBottom) {
-            resetDistance = false;
-            arrowTipDistance = (context.size!.height / 2).roundToDouble() -
-                ((widgetScrollBottom + 200) - viewportBottom);
-            if (arrowTipDistance < 0) {
-              popupDirection = TooltipDirection.up;
-              arrowTipDistance = 0 - arrowTipDistance;
-            }
-            isTargetHeadVisible = false;
+      // 判断可见性
+      // 增加判断：只有当 viewportHeight 接近屏幕高度时（说明不是 shrinkWrap 导致的短列表），才执行这个逻辑
+      // 或者当 viewportHeight 足够大时
+      if (viewportHeight > MediaQuery.of(context).size.height * 0.8) {
+        if (popupDirection == TooltipDirection.down &&
+            (widgetScrollBottom + 30) > viewportBottom) {
+          resetDistance = false;
+          arrowTipDistance = (context.size!.height / 2).roundToDouble() -
+              ((widgetScrollBottom + 200) - viewportBottom);
+          if (arrowTipDistance < 0) {
+            popupDirection = TooltipDirection.up;
+            arrowTipDistance = 0 - arrowTipDistance;
           }
+          isTargetHeadVisible = false;
         }
       }
-    }
+        }
     if (resetDistance) {
       arrowTipDistance = (context.size!.height / 2).roundToDouble() + 10;
     }

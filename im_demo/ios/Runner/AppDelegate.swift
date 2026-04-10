@@ -17,7 +17,7 @@ import UserNotifications
         LocalServerManager.instance.startServer()
         // 注册空方法，防止dart调用时报错找不到方法
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        let methodChannel = FlutterMethodChannel(name: "com.netease.yunxin.app.flutter.im/channel",
+        let methodChannel = FlutterMethodChannel(name: "com.hestia.n168chat.app.flutter.im/channel",
                                                  binaryMessenger: controller.binaryMessenger)
 
         methodChannel.setMethodCallHandler{ (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
@@ -48,7 +48,7 @@ import UserNotifications
                 let sessionType = userInfo["sessionType"] as? String{
                     print("userNotificationCenter sessionId: \(sessionId) sessionType : \(sessionType)")
                     let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-                    let methodChannel = FlutterMethodChannel(name: "com.netease.yunxin.app.flutter.im/channel",
+                    let methodChannel = FlutterMethodChannel(name: "com.hestia.n168chat.app.flutter.im/channel",
                                                              binaryMessenger: controller.binaryMessenger)
 
                     //热启动，此时Flutter 页面已经存在，直接调用Flutter的接口
@@ -87,7 +87,7 @@ import UserNotifications
         //将deviceToken传到dart层
         let flutterData = FlutterStandardTypedData.init(bytes: deviceToken)
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        let methodChannel = FlutterMethodChannel(name: "com.netease.yunxin.app.flutter.im/channel",
+        let methodChannel = FlutterMethodChannel(name: "com.hestia.n168chat.app.flutter.im/channel",
                                                   binaryMessenger: controller.binaryMessenger)
         methodChannel.invokeMethod("updateAPNsToken", arguments: flutterData)
     }

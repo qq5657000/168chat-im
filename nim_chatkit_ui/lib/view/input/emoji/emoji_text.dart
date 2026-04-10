@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
 
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/cupertino.dart';

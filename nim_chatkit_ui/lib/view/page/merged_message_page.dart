@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:netease_common/netease_common.dart';
 import 'package:netease_common_ui/widgets/transparent_scaffold.dart';
 import 'package:nim_chatkit/message/merge_message.dart';
 import 'package:nim_chatkit/repo/chat_message_repo.dart';

@@ -11,8 +11,6 @@ import 'package:nim_chatkit/model/recent_forward.dart';
 import 'package:nim_chatkit/repo/contact_repo.dart';
 import 'package:nim_chatkit/repo/conversation_repo.dart';
 import 'package:nim_chatkit/repo/team_repo.dart';
-import 'package:nim_chatkit/service_locator.dart';
-import 'package:nim_chatkit/services/contact/contact_provider.dart';
 import 'package:nim_chatkit/repo/chat_message_repo.dart';
 import 'package:nim_core_v2/nim_core.dart';
 

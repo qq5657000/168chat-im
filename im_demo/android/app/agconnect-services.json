@@ -33,7 +33,7 @@
 		"project_id":"99536292102492946",
 		"app_id":"106776305",
 		"api_key":"DAEDAJoVyTMhgTE3B5aS6tdPQ8cen5Bnu6/6lJrfzbWXXctH/TCJHxwA+JDVDuD36+UlKlBqm5xPWdWieEz6DaKBOa6n7tzvAKwGWA==",
-		"package_name":"com.netease.yunxin.app.flutter.im"
+		"package_name":"com.hestia.n168chat.app.flutter.im"
 	},
 	"oauth_client":{
 		"client_id":"106776305",
@@ -41,7 +41,7 @@
 	},
 	"app_info":{
 		"app_id":"106776305",
-		"package_name":"com.netease.yunxin.app.flutter.im"
+		"package_name":"com.hestia.n168chat.app.flutter.im"
 	},
 	"service":{
 		"analytics":{
@@ -79,12 +79,12 @@
 	"configuration_version":"3.0",
 	"appInfos":[
 		{
-			"package_name":"com.netease.yunxin.app.flutter.im",
+			"package_name":"com.hestia.n168chat.app.flutter.im",
 			"client":{
 				"app_id":"106776305"
 			},
 			"app_info":{
-				"package_name":"com.netease.yunxin.app.flutter.im",
+				"package_name":"com.hestia.n168chat.app.flutter.im",
 				"app_id":"106776305"
 			},
 			"oauth_client":{

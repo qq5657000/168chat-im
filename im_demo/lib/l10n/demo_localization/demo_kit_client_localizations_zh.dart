@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-
-
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 import 'demo_kit_client_localizations.dart';
@@ -15,7 +13,7 @@ class DemoKitClientLocalizationsZh extends DemoKitClientLocalizations {
   DemoKitClientLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => '云信IM';
+  String get appName => '168聊';
 
   @override
   String get yunxinName => '网易云信';
@@ -190,7 +188,8 @@ class DemoKitClientLocalizationsZh extends DemoKitClientLocalizations {
   String get settingAndResetTips => '设置成功，重启后生效';
 
   @override
-  String get swindleTips => '仅用于体验云信IM 产品功能，请勿轻信汇款、中奖等涉及钱款的信息，勿轻易拨打陌生电话，谨防上当受骗。';
+  String get swindleTips =>
+      '仅用于体验云信IM 产品功能，请勿轻信汇款、中奖等涉及钱款的信息，勿轻易拨打陌生电话，谨防上当受骗。';
 
   @override
   String get aiStreamMode => 'AI数字人流式输出';

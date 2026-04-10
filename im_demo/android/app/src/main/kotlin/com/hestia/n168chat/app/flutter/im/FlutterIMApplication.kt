@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-package com.netease.yunxin.app.flutter.im
+package com.hestia.n168chat.app.flutter.im
 
 import android.app.Application
 import com.heytap.msp.push.HeytapPushManager

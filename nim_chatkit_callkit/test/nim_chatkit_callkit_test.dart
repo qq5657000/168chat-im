@@ -4,7 +4,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:nim_chatkit_callkit/nim_chatkit_callkit.dart';
 
 void main() {
   test('adds one to input values', () {});

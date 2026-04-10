@@ -13,7 +13,6 @@ import 'package:nim_chatkit/service_locator.dart';
 import 'package:nim_chatkit/services/contact/contact_provider.dart';
 import 'package:nim_chatkit/repo/contact_repo.dart';
 import 'package:nim_core_v2/nim_core.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 
 //默认注册数量，联系人小于或等于此数量，则在拉取后直接注册
 final int defaultSubscriptionCount = 10;

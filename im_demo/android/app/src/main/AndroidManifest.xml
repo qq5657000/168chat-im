@@ -4,7 +4,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.netease.yunxin.app.flutter.im">
+    package="com.hestia.n168chat.app.flutter.im">
     <!-- permission -->
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- network-->
@@ -33,22 +33,22 @@
     <!-- xiaomi push -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <permission
-        android:name="com.netease.yunxin.app.flutter.im.permission.MIPUSH_RECEIVE"
+        android:name="com.hestia.n168chat.app.flutter.im.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature"/>
-    <uses-permission android:name="com.netease.yunxin.app.flutter.im.permission.MIPUSH_RECEIVE"/>
+    <uses-permission android:name="com.hestia.n168chat.app.flutter.im.permission.MIPUSH_RECEIVE"/>
     <!--meuzu push-->
     <!-- down Flyme5 version -->
     <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE"/>
     <permission
-        android:name="com.netease.yunxin.app.flutter.im.push.permission.MESSAGE"
+        android:name="com.hestia.n168chat.app.flutter.im.push.permission.MESSAGE"
         android:protectionLevel="signature"/>
-    <uses-permission android:name="com.netease.yunxin.app.flutter.im.push.permission.MESSAGE"/>
+    <uses-permission android:name="com.hestia.n168chat.app.flutter.im.push.permission.MESSAGE"/>
     <!--  Flyme3 -->
     <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
     <permission
-        android:name="com.netease.yunxin.app.flutter.im.permission.C2D_MESSAGE"
+        android:name="com.hestia.n168chat.app.flutter.im.permission.C2D_MESSAGE"
         android:protectionLevel="signature"/>
-    <uses-permission android:name="com.netease.yunxin.app.flutter.im.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.hestia.n168chat.app.flutter.im.permission.C2D_MESSAGE"/>
 
     <!--允许获取精确位置，精准定位必选-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -91,7 +91,7 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="com.netease.yunxin.app.flutter.im.push"/>
+                <action android:name="com.hestia.n168chat.app.flutter.im.push"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -194,7 +194,7 @@
                 <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
                 <action android:name="com.meizu.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.netease.yunxin.app.flutter.im"/>
+                <category android:name="com.hestia.n168chat.app.flutter.im"/>
             </intent-filter>
         </receiver>
 

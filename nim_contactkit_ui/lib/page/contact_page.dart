@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:nim_chatkit/repo/config_repo.dart';
 import 'package:nim_chatkit/router/imkit_router_factory.dart';
 import 'package:nim_contactkit_ui/contact_kit_client.dart';
 import 'package:nim_contactkit_ui/page/contact_kit_contact_page.dart';

@@ -16,16 +16,12 @@ import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:netease_common_ui/widgets/permission_request.dart';
 import 'package:netease_common_ui/widgets/platform_utils.dart';
 import 'package:netease_plugin_core_kit/netease_plugin_core_kit.dart';
-import 'package:nim_chatkit/chatkit_utils.dart';
-import 'package:nim_chatkit/im_kit_config_center.dart';
 import 'package:nim_chatkit/manager/ai_user_manager.dart';
 import 'package:nim_core_v2/nim_core.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:yunxin_alog/yunxin_alog.dart';
 import 'package:netease_common_ui/base/base_state.dart';
-import 'package:nim_chatkit/repo/chat_message_repo.dart';
 
 import '../../chat_kit_client.dart';
 import '../../l10n/S.dart';
@@ -63,9 +59,15 @@ class _MorePanelState extends BaseState<MorePanel> {
 
   List<ActionItem> getActions(NIMConversationType conversationType) {
     if (widget.moreActions != null) {
+      // 按 conversationTypes 过滤：空列表/null 表示不限制（所有类型均显示）
+      final filtered = widget.moreActions!.where((action) {
+        if (action.conversationTypes == null ||
+            action.conversationTypes!.isEmpty) return true;
+        return action.conversationTypes!.contains(conversationType);
+      }).toList();
       return [
         if (widget.keepDefault) ..._defaultMoreActions(conversationType),
-        ...widget.moreActions!,
+        ...filtered,
       ];
     }
     return _defaultMoreActions(conversationType);

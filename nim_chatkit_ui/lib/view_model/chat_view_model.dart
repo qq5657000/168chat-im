@@ -242,7 +242,7 @@ class ChatViewModel extends ChangeNotifier {
       });
     }
     if (anchorMessage != null) {
-      loadMessageWithAnchor(anchorMessage!);
+      loadMessageWithAnchor(anchorMessage);
     } else if (this.findAnchorDate != null) {
       loadMessageWithAnchorDate(this.findAnchorDate!);
     } else {

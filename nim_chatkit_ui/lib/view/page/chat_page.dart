@@ -581,6 +581,19 @@ class ChatPageState extends BaseState<ChatPage> with RouteAware {
                           if (!hasNetWork) NoNetWorkTip(),
                           if (context.watch<ChatViewModel>().showWarningTips)
                             getSwindleWidget(context),
+                          // ── 置顶自定义 Widget（如群聊课堂横幅）──────────────
+                          Builder(builder: (ctx) {
+                            final topWidget = chatUIConfig?.topWidgetBuilder
+                                    ?.call(widget.conversationId,
+                                        widget.conversationType) ??
+                                ChatKitClient.instance.chatUIConfig
+                                    .topWidgetBuilder
+                                    ?.call(widget.conversationId,
+                                        widget.conversationType);
+                            if (topWidget != null) return topWidget;
+                            return const SizedBox.shrink();
+                          }),
+                          // ──────────────────────────────────────────────────
                           Expanded(
                             child: GestureDetector(
                               onTap: () {

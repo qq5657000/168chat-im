@@ -163,7 +163,7 @@ class _ChatSettingPageState extends State<ChatSettingPage> {
             style: style,
           ),
           trailing: CupertinoSwitch(
-            activeColor: CommonColors.color_337eff,
+            activeTrackColor: CommonColors.color_337eff,
             onChanged: (bool value) async {
               if (!(await haveConnectivity())) {
                 return;
@@ -179,7 +179,7 @@ class _ChatSettingPageState extends State<ChatSettingPage> {
             style: style,
           ),
           trailing: CupertinoSwitch(
-            activeColor: CommonColors.color_337eff,
+            activeTrackColor: CommonColors.color_337eff,
             onChanged: (bool value) async {
               if (!(await haveConnectivity())) {
                 return;
@@ -196,7 +196,7 @@ class _ChatSettingPageState extends State<ChatSettingPage> {
               style: style,
             ),
             trailing: CupertinoSwitch(
-              activeColor: CommonColors.color_337eff,
+              activeTrackColor: CommonColors.color_337eff,
               onChanged: (bool value) async {
                 if (!(await haveConnectivity())) {
                   return;

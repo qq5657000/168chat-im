@@ -5,9 +5,6 @@
 import 'package:netease_common_ui/utils/connectivity_checker.dart';
 import 'package:nim_chatkit/router/imkit_router_factory.dart';
 import 'package:netease_common_ui/widgets/search_page.dart';
-import 'package:nim_chatkit/service_locator.dart';
-import 'package:nim_chatkit/services/login/im_login_service.dart';
-import 'package:nim_chatkit/services/user_info/user_info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nim_core_v2/nim_core.dart';

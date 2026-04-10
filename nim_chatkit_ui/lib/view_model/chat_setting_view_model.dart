@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:netease_common/netease_common.dart';
 import 'package:nim_chatkit/chatkit_utils.dart';
 import 'package:nim_chatkit/im_kit_client.dart';
 import 'package:nim_chatkit/manager/ai_user_manager.dart';

@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:im_demo/src/mine/setting/language_setting.dart';
 import 'package:im_demo/src/mine/setting/notify_setting_page.dart';
+import 'package:im_demo/src/auth/login_page_new.dart';
 import 'package:netease_common_ui/ui/background.dart';
 import 'package:netease_common_ui/ui/dialog.dart';
 import 'package:netease_common_ui/widgets/common_list_tile.dart';
 import 'package:netease_common_ui/widgets/transparent_scaffold.dart';
 import 'package:nim_chatkit/im_kit_client.dart';
 import 'package:nim_chatkit/repo/config_repo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yunxin_alog/yunxin_alog.dart';
 
 import '../../../l10n/S.dart';
 
@@ -212,13 +215,38 @@ class _MineSettingPageState extends State<MineSettingPage> {
                           content: S.of(context).logoutDialogContent,
                           navigateContent: S.of(context).logoutDialogDisagree,
                           positiveContent: S.of(context).logoutDialogAgree)
-                      .then((value) {
+                      .then((value) async {
                     if (value ?? false) {
-                      IMKitClient.logoutIM().then((value) {
-                        if (value) {
-                          Navigator.pop(context);
+                      // 执行退出登录
+                      final logoutSuccess = await IMKitClient.logoutIM();
+                      
+                      if (logoutSuccess) {
+                        Alog.d(content: "退出登录成功");
+                        
+                        // 清除本地保存的登录信息
+                        try {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('is_logged_in');
+                          await prefs.remove('account');
+                          await prefs.remove('token');
+                          Alog.d(content: "清除本地登录信息成功");
+                        } catch (e) {
+                          Alog.e(content: "清除本地登录信息失败: ${e.toString()}");
                         }
-                      });
+                        
+                        // 跳转到登录页面，清除所有导航栈
+                        if (mounted) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPageNew(),
+                            ),
+                            (route) => false,
+                          );
+                        }
+                      } else {
+                        Alog.e(content: "退出登录失败");
+                        Fluttertoast.showToast(msg: "退出登录失败");
+                      }
                     }
                   });
                 },

@@ -43,11 +43,11 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 35
+    compileSdkVersion 36
 
-    buildToolsVersion "35.0.0"
+    buildToolsVersion "36.0.0"
 
-    namespace 'com.netease.yunxin.app.flutter.im'
+    namespace 'com.hestia.n168chat.app.flutter.im'
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -74,9 +74,9 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.netease.yunxin.app.flutter.im"
+        applicationId "com.hestia.n168chat.app.flutter.im"
         minSdkVersion 24
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         ndk {
@@ -98,7 +98,7 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
