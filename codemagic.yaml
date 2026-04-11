@@ -12,28 +12,25 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 👇 终极修复：修改插件内部版本 + 强制iOS 13.0
-      - name: Final fix all conflicts
+      # 🔥 终极修复：路径正确 + macOS sed 兼容 + 版本统一
+      - name: Fix plugin version & iOS 13.0
         script: |
-          cd im_demo
+          # 修复 callkit_ui 版本 5.9.11 → 5.9.10
+          cd $CM_BUILD_DIR/im_demo
+          find ios/.symlinks/plugins -name "netease_callkit_ui.podspec" -exec sed -i '' 's/5\.9\.11/5.9.10/g' {} \;
           
-          # 1. 修改插件依赖，强制 5.9.10
-          find .symlinks/plugins \
-            \( -name "netease_callkit_ui.podspec" \) \
-            -exec sed -i 's/5\.9\.11/5.9.10/g' {} \;
-
-          # 2. 设置 iOS 最低版本 13.0
+          # 强制设置 iOS 13.0
           cd ios
-          sed -i 's/platform :ios.*/platform :ios, "13.0"/' Podfile
+          sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
 
-      - name: Clean and install pods
+      - name: Install pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           pod repo update
           pod install --repo-update
 
-      - name: Build iOS (no codesign)
+      - name: Build iOS
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
