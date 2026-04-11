@@ -12,23 +12,32 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 🔥 🔥 🔥 唯一能解决冲突的终极脚本
-      - name: Force fix NERtcSDK version conflict
+      # netease_callkit_ui 的 podspec 固定 NERtcSDK 5.9.11，而 netease_roomkit 固定 5.9.10。
+      # 必须在 pod install 之前，把 pub-cache（及 ios/.symlinks 指向的同一文件）里的 5.9.11 改成 5.9.10。
+      # 不要用 sed 删掉版本号，否则会破坏 podspec 语法。
+      - name: Align NERtcSDK to 5.9.10 for CocoaPods
         script: |
-          cd $CM_BUILD_DIR/im_demo
-          
-          # 1. 修复 callkit_ui → 去掉固定版本号，让它兼容所有版本
-          find ios/.symlinks/plugins -name "netease_callkit_ui.podspec" | head -1 | xargs -I {} sed -i '' 's/NERtcSDK.*=.*5\.9\.11/NERtcSDK/g' {}
-          
-          # 2. 修复 Podfile 最低版本 iOS 13.0
-          cd ios
-          sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
+          set -euo pipefail
+          ROOT="${CM_BUILD_DIR:-$(pwd)}"
+          cd "$ROOT"
+          patch_if_needed() {
+            local dir="$1"
+            [ -d "$dir" ] || return 0
+            find "$dir" -type f -name "*.podspec" -path "*netease_callkit*" 2>/dev/null | while read -r f; do
+              if grep -q '5\.9\.11' "$f" 2>/dev/null; then
+                echo "PATCH: $f"
+                sed -i '' 's/5\.9\.11/5.9.10/g' "$f"
+              fi
+            done
+          }
+          patch_if_needed "$HOME/.pub-cache/hosted"
+          patch_if_needed "im_demo/ios/.symlinks/plugins"
 
       - name: Clean and install pods
         script: |
+          set -euo pipefail
           cd im_demo/ios
           rm -rf Pods Podfile.lock
-          pod repo update
           pod install --repo-update
 
       - name: Build iOS
