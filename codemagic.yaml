@@ -12,24 +12,25 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      - name: Patch NERtcSDK version conflict
+      # 👇 强制在 Podfile 里插入固定版本，彻底解决冲突
+      - name: Force fix NERtcSDK in Podfile
         script: |
-          echo "=== Patching netease_callkit podspecs: 5.9.11 -> 5.9.10 ==="
-          find "$HOME/.pub-cache/hosted" \
-            \( -name "netease_callkit.podspec" -o -name "netease_callkit_ui.podspec" \) \
-            | while read f; do
-              echo "  Patching: $f"
-              sed -i '' 's/= 5\.9\.11/= 5.9.10/g' "$f"
-              grep -n "NERtcSDK" "$f" || true
-          done
+          echo "=== 强制锁定 NERtcSDK 版本 ==="
+          cd im_demo/ios
+          echo "pod 'NERtcSDK', '5.9.10'" >> Podfile
+          cat Podfile
 
-      - name: Update CocoaPods specs repo
-        script: pod repo update
-        working_directory: im_demo/ios
+      - name: Clean Pods & Install
+        script: |
+          cd im_demo/ios
+          rm -rf Pods Podfile.lock
+          pod repo update
+          pod install --repo-update
 
       - name: Build iOS (no codesign)
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
     artifacts:
-      - im_demo/build/ios/iphoneos/Runner.app
+      - im_demo/build/ios/ipa/*.ipa
+      - im_demo/build/ios/iphoneos/*.app
