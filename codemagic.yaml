@@ -8,27 +8,27 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Get Flutter packages
+      - name: Get Flutter dependencies
         script: flutter pub get
         working_directory: im_demo
 
-      - name: Fix Podfile + Add Netease Source
+      # 👇 只做一件安全的事：强制 iOS 13.0（不碰任何源、不碰任何版本）
+      - name: Set iOS deployment target to 13.0
         script: |
           cd im_demo/ios
-          # 强制 iOS 13.0
           sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
-          # 添加网易私有源
-          echo "source 'https://github.com/netease-kit/NEPodSpecs.git'" >> Podfile
-          echo "source 'https://cdn.cocoapods.org/'" >> Podfile
 
-      - name: Install pods
+      - name: Clean CocoaPods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           pod repo update
-          pod install --repo-update
 
-      - name: Build iOS
+      - name: Install pods
+        script: pod install
+        working_directory: im_demo/ios
+
+      - name: Build iOS without codesign
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
