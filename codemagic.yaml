@@ -12,14 +12,21 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 👇 强制把整个项目升级到 iOS 13.0（解决所有版本报错）
-      - name: Force iOS 13.0 + fix NERtcSDK
+      # 👇 终极修复：修改插件内部版本 + 强制iOS 13.0
+      - name: Final fix all conflicts
         script: |
-          cd im_demo/ios
-          sed -i '' 's/platform :ios, .*/platform :ios, "13.0"/' Podfile
-          echo "pod 'NERtcSDK', '5.9.10'" >> Podfile
+          cd im_demo
+          
+          # 1. 修改插件依赖，强制 5.9.10
+          find .symlinks/plugins \
+            \( -name "netease_callkit_ui.podspec" \) \
+            -exec sed -i 's/5\.9\.11/5.9.10/g' {} \;
 
-      - name: Clean Pods & Install
+          # 2. 设置 iOS 最低版本 13.0
+          cd ios
+          sed -i 's/platform :ios.*/platform :ios, "13.0"/' Podfile
+
+      - name: Clean and install pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
@@ -31,5 +38,5 @@ workflows:
         working_directory: im_demo
 
     artifacts:
+      - im_demo/build/ios/iphoneos/Runner.app
       - im_demo/build/ios/ipa/*.ipa
-      - im_demo/build/ios/iphoneos/*.app
