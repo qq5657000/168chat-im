@@ -32,7 +32,9 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  # 动态 framework 时 nim_core_v2 与 netease_roomkit 会各自嵌入 NIMSDK/NIMQuic 等，触发
+  # "Multiple commands produce .../NIMSDK.framework"。静态链接可避免重复 Embed。
+  use_frameworks! :linkage => :static
   use_modular_headers!
   pod 'GCDWebServer', '3.5.4'
 
