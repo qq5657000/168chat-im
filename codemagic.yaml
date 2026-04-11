@@ -12,25 +12,26 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 🔥 终极修复：路径正确 + macOS sed 兼容 + 版本统一
-      - name: Fix plugin version & iOS 13.0
+      # 🔥 🔥 🔥 终极修复：全部统一用 5.9.11
+      - name: Force all to NERtcSDK 5.9.11
         script: |
-          # 修复 callkit_ui 版本 5.9.11 → 5.9.10
-          cd $CM_BUILD_DIR/im_demo
-          find ios/.symlinks/plugins -name "netease_callkit_ui.podspec" -exec sed -i '' 's/5\.9\.11/5.9.10/g' {} \;
+          cd $CM_BUILD_DIR/im_demo/ios
           
-          # 强制设置 iOS 13.0
-          cd ios
+          # 1. 强制最低 iOS 13.0
           sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
+          
+          # 2. 强制项目依赖 5.9.11
+          echo "pod 'NERtcSDK', '5.9.11'" >> Podfile
+          echo "pod 'NERoomKit', '1.44.0'" >> Podfile
 
-      - name: Install pods
+      - name: Clean & Install Pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           pod repo update
           pod install --repo-update
 
-      - name: Build iOS
+      - name: Build iOS (no codesign)
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
