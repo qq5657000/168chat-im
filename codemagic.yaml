@@ -48,6 +48,10 @@ workflows:
             [ "$attempt" -eq 3 ] && exit 1
           done
 
+      # flutter build 可能再次触发 pod 相关步骤；在 xcodebuild 前再跑一次去重，避免列表被重新生成后重复。
+      - name: Dedupe CocoaPods embed outputs
+        script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
+
       - name: Build iOS
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo

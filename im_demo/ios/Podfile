@@ -101,52 +101,10 @@ post_install do |installer|
 
   end
 
-  # Xcode 15+：若 output xcfilelist 里出现两条相同目标路径（如两个插件都嵌入 NIMSDK.framework），
-  # 会报 Multiple commands produce。对 Embed Frameworks / Copy Pods Resources 的 input-output 成对去重。
-  support = File.join(installer.sandbox.root, 'Target Support Files', 'Pods-Runner')
-  %w[frameworks resources].each do |kind|
-    %w[Debug Release Profile].each do |cfg|
-      inf = File.join(support, "Pods-Runner-#{kind}-#{cfg}-input-files.xcfilelist")
-      outf = File.join(support, "Pods-Runner-#{kind}-#{cfg}-output-files.xcfilelist")
-      next unless File.exist?(inf) && File.exist?(outf)
-
-      ins = File.readlines(inf).map(&:strip).reject(&:empty?)
-      outs = File.readlines(outf).map(&:strip).reject(&:empty?)
-      next if ins.length != outs.length
-
-      seen = {}
-      new_in = []
-      new_out = []
-      ins.zip(outs).each do |i_line, o_line|
-        next if seen[o_line]
-
-        seen[o_line] = true
-        new_in << i_line
-        new_out << o_line
-      end
-      File.write(inf, new_in.join("\n") + "\n")
-      File.write(outf, new_out.join("\n") + "\n")
-    end
-  end
-
-  # 与 xcfilelist 保持一致，去掉 embed 脚本里重复的 install_framework
-  fw_sh = File.join(support, 'Pods-Runner-frameworks.sh')
-  if File.exist?(fw_sh)
-    seen_fw = {}
-    lines = File.readlines(fw_sh)
-    out_lines = []
-    lines.each do |line|
-      if line =~ /install_framework\s+/
-        m = line.match(/([^\/\s"'`]+\.framework)/)
-        if m
-          fw = m[1]
-          next if seen_fw[fw]
-
-          seen_fw[fw] = true
-        end
-      end
-      out_lines << line
-    end
-    File.write(fw_sh, out_lines.join)
+  # Xcode 15+：nim_core + roomkit 等对 NIMSDK 重复嵌入、资源重复产出 Assets.car → Multiple commands produce
+  # 按「产物 basename」对 xcfilelist 成对去重（见 dedupe_cocoapods_embed.rb）。
+  dedupe_rb = File.expand_path('dedupe_cocoapods_embed.rb', File.dirname(__FILE__))
+  if File.exist?(dedupe_rb)
+    system('ruby', dedupe_rb, installer.sandbox.root.to_s) || raise("dedupe_cocoapods_embed.rb failed")
   end
 end
