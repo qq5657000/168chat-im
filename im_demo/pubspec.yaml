@@ -126,6 +126,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-dependency_overrides:
-  netease_callkit: 4.1.0+3
-  netease_callkit_ui: 4.1.0+3
