@@ -12,6 +12,17 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
+      - name: Patch NERtcSDK version conflict
+        script: |
+          echo "=== Patching netease_callkit podspecs: 5.9.11 -> 5.9.10 ==="
+          find "$HOME/.pub-cache/hosted" \
+            \( -name "netease_callkit.podspec" -o -name "netease_callkit_ui.podspec" \) \
+            | while read f; do
+              echo "  Patching: $f"
+              sed -i '' 's/= 5\.9\.11/= 5.9.10/g' "$f"
+              grep -n "NERtcSDK" "$f" || true
+          done
+
       - name: Update CocoaPods specs repo
         script: pod repo update
         working_directory: im_demo/ios
