@@ -1,8 +1,8 @@
 # Uncomment this line to define a global platform for your project
 # platform :ios, '12.0'
 
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-source 'https://github.com/CocoaPods/Specs.git'
+# 使用 CDN（增量拉取）；勿用 github.com/CocoaPods/Specs.git 全量仓库，CI 上易超时（curl 大文件中断）。
+source 'https://cdn.cocoapods.org/'
 # Flutter 与插件（如 yunxin_alog）要求不低于 iOS 13；勿低于 11 或与 post_install 冲突
 platform :ios, '13.0'
 

@@ -38,7 +38,15 @@ workflows:
           set -euo pipefail
           cd im_demo/ios
           rm -rf Pods Podfile.lock
-          pod install --repo-update
+          # CDN 下一般不需要 pod repo update。NERtcSDK 等二进制较大，网络偶发断连时重试（set -e 下需用 if，否则失败即退出）。
+          for attempt in 1 2 3; do
+            if pod install; then
+              break
+            fi
+            echo "pod install failed (attempt $attempt), retry in 25s..."
+            sleep 25
+            [ "$attempt" -eq 3 ] && exit 1
+          done
 
       - name: Build iOS
         script: flutter build ios --debug --no-codesign
