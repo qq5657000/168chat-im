@@ -158,7 +158,7 @@ class _RoomListPageState extends State<RoomListPage> {
       print('✅ [RoomListPage] NERoomKit 登录成功，开始加入房间');
 
       // 3. 调用 NERoomKit 加入云信房间
-      // 模板 13752（线上会议）有效角色：host（主持人）、cohost（联席主持人）、member（成员）
+      // 模板 13818（线上会议）有效角色：host（主持人）、cohost（联席主持人）、member（成员）
       // 加入已有房间的用户统一使用 'member' 角色，即可开启音视频
       final roomContext = await RoomKitService().joinRoom(
         roomUuid: room.roomId,
