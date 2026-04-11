@@ -1,7 +1,7 @@
 workflows:
   ios-debug:
     name: iOS Debug Build
-    max_build_duration: 60
+    max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
       flutter: stable
@@ -12,40 +12,40 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 修复 NERtcSDK 版本冲突
-      - name: Align NERtcSDK to 5.9.10
+      # 统一 NERtcSDK 版本
+      - name: Fix NERtcSDK version conflict
         script: |
           set -euo pipefail
-          ROOT="${CM_BUILD_DIR:-$(pwd)}"
+          ROOT="${CM_BUILD_DIR}"
           cd "$ROOT"
-          patch_if_needed() {
-            local dir="$1"
-            [ -d "$dir" ] || return 0
-            find "$dir" -type f -name "*.podspec" -path "*netease_callkit*" 2>/dev/null | while read -r f; do
-              sed -i '' 's/5\.9\.11/5.9.10/g' "$f" 2>/dev/null
-            done
+          patch() {
+            local d="$1"
+            [ -d "$d" ] && find "$d" -name "netease_callkit_ui.podspec" -exec sed -i '' 's/5\.9\.11/5.9.10/g' {} \;
           }
-          patch_if_needed "$HOME/.pub-cache/hosted"
-          patch_if_needed "im_demo/ios/.symlinks/plugins"
+          patch "$HOME/.pub-cache"
+          patch "im_demo/ios/.symlinks/plugins"
 
-      - name: Clean Pods
+      # 🔥 核心修复：关闭 Xcode 重复嵌入框架
+      - name: Disable Xcode duplicate framework embedding
+        script: |
+          cd im_demo/ios
+          sed -i '' 's/use_frameworks! :linkage => :static/use_frameworks! :linkage => :static\n  use_modular_headers!/' Podfile
+          sed -i '' 's/config.build_settings\["CODE_SIGNING_ALLOWED"\] = "NO"/& \n          config.build_settings\["ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES"\] = "NO"/' Podfile
+          sed -i '' 's/config.build_settings\["CODE_SIGNING_ALLOWED"\] = "NO"/& \n          config.build_settings\["EMBEDDED_CONTENT_CONTAINS_SWIFT"\] = "NO"/' Podfile
+
+      - name: Clean & Install Pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
+          pod install
 
-      - name: Install pods
-        script: pod install --verbose
-        working_directory: im_demo/ios
+      - name: Flutter clean
+        script: flutter clean
+        working_directory: im_demo
 
-      # 🔥 🔥 🔥 关键：清除 Xcode 缓存 + 修复重复编译
-      - name: Clean Xcode DerivedData
-        script: |
-          rm -rf ~/Library/Developer/Xcode/DerivedData
-          cd im_demo
-          flutter clean
-
-      - name: Build iOS (no codesign)
-        script: flutter build ios --debug --no-codesign --verbose
+      # 🔥 最终构建：禁用自动安装框架
+      - name: Build iOS (NO codesign, NO duplicate frameworks)
+        script: flutter build ios --debug --no-codesign --no-tree-shake-icons
         working_directory: im_demo
 
     artifacts:
