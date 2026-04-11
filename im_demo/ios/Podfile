@@ -31,6 +31,37 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
+# 在 [CP] Embed / Copy Pods 脚本前执行去重，避免 flutter build 内部再次 pod install 后仍产生重复产物路径
+def inject_dedupe_before_cocoapods_embed(installer)
+  ios_dir = File.dirname(File.realpath(__FILE__))
+  marker = 'dedupe_cocoapods_embed.rb'
+  # PODS_ROOT = ios/Pods，上一级即 ios，脚本与 Podfile 同目录（比 SRCROOT 更稳）
+  prefix = "ruby \"${PODS_ROOT}/../#{marker}\" \"${PODS_ROOT}\" && "
+
+  project = installer.aggregate_targets.map(&:user_project).compact.first
+
+  if project.nil?
+    xcodeproj = File.join(ios_dir, 'Runner.xcodeproj')
+    project = Xcodeproj::Project.open(xcodeproj) if File.exist?(xcodeproj)
+  end
+  return if project.nil?
+
+  project.targets.each do |target|
+    next unless target.name == 'Runner'
+
+    target.build_phases.each do |phase|
+      next unless phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+      next unless phase.name && ['[CP] Embed Pods Frameworks', '[CP] Copy Pods Resources'].include?(phase.name)
+
+      script = phase.shell_script.to_s
+      next if script.include?(marker)
+
+      phase.shell_script = prefix + script
+    end
+  end
+  project.save
+end
+
 target 'Runner' do
   # 动态 framework 时 nim_core_v2 与 netease_roomkit 会各自嵌入 NIMSDK/NIMQuic 等，触发
   # "Multiple commands produce .../NIMSDK.framework"。静态链接可避免重复 Embed。
@@ -107,4 +138,6 @@ post_install do |installer|
   if File.exist?(dedupe_rb)
     system('ruby', dedupe_rb, installer.sandbox.root.to_s) || raise("dedupe_cocoapods_embed.rb failed")
   end
+
+  inject_dedupe_before_cocoapods_embed(installer)
 end
