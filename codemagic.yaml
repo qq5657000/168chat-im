@@ -1,0 +1,24 @@
+workflows:
+  ios-debug:
+    name: iOS Debug Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+        working_directory: im_demo
+
+      - name: Update CocoaPods specs repo
+        script: pod repo update
+        working_directory: im_demo/ios
+
+      - name: Build iOS (no codesign)
+        script: flutter build ios --debug --no-codesign
+        working_directory: im_demo
+
+    artifacts:
+      - im_demo/build/ios/iphoneos/Runner.app
