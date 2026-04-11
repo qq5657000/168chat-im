@@ -49,9 +49,15 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
+      # 构建前再 pod install + 去重：flutter build 会再次执行 pod install，需在 xcodebuild 前最后一次修正
       - name: Build iOS
-        script: flutter build ios --debug --no-codesign
-        working_directory: im_demo
+        script: |
+          set -eo pipefail
+          cd im_demo/ios
+          pod install
+          ruby dedupe_cocoapods_embed.rb Pods
+          cd ..
+          flutter build ios --debug --no-codesign
 
     artifacts:
       - im_demo/build/ios/iphoneos/Runner.app

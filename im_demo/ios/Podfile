@@ -6,6 +6,9 @@ source 'https://cdn.cocoapods.org/'
 # Flutter 与插件（如 yunxin_alog）要求不低于 iOS 13；勿低于 11 或与 post_install 冲突
 platform :ios, '13.0'
 
+# Xcode 15+：不向 Embed/Copy 脚本挂 input/output xcfilelist，避免同一产物路径被登记两次 → Multiple commands produce
+install! 'cocoapods', :disable_input_output_paths => true
+
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -52,6 +55,10 @@ def inject_dedupe_before_cocoapods_embed(installer)
     target.build_phases.each do |phase|
       next unless phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
       next unless phase.name && ['[CP] Embed Pods Frameworks', '[CP] Copy Pods Resources'].include?(phase.name)
+
+      # 双保险：清空 file list（若 CocoaPods 版本仍写入）
+      phase.input_file_list_paths = [] if phase.respond_to?(:input_file_list_paths=)
+      phase.output_file_list_paths = [] if phase.respond_to?(:output_file_list_paths=)
 
       script = phase.shell_script.to_s
       next if script.include?(marker)
