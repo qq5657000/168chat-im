@@ -12,29 +12,25 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 🔥 🔥 🔥 终极修复：全部统一用 5.9.11
-      - name: Force all to NERtcSDK 5.9.11
+      - name: Fix Podfile + Add Netease Source
         script: |
-          cd $CM_BUILD_DIR/im_demo/ios
-          
-          # 1. 强制最低 iOS 13.0
+          cd im_demo/ios
+          # 强制 iOS 13.0
           sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
-          
-          # 2. 强制项目依赖 5.9.11
-          echo "pod 'NERtcSDK', '5.9.11'" >> Podfile
-          echo "pod 'NERoomKit', '1.44.0'" >> Podfile
+          # 添加网易私有源
+          echo "source 'https://github.com/netease-kit/NEPodSpecs.git'" >> Podfile
+          echo "source 'https://cdn.cocoapods.org/'" >> Podfile
 
-      - name: Clean & Install Pods
+      - name: Install pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           pod repo update
           pod install --repo-update
 
-      - name: Build iOS (no codesign)
+      - name: Build iOS
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
     artifacts:
       - im_demo/build/ios/iphoneos/Runner.app
-      - im_demo/build/ios/ipa/*.ipa
