@@ -3,19 +3,8 @@
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 source 'https://github.com/CocoaPods/Specs.git'
-
-pre_install do |installer|
-  installer.pod_targets.each do |pod|
-    pod.specs.each do |spec|
-      if spec.name == 'NERtcCallKit'
-        spec.dependencies['NERtcSDK/RtcBasic'] &&= ['= 5.9.10']
-        spec.dependencies['NERtcSDK/FCS_Special'] &&= ['= 5.9.10']
-      end
-    end
-  end
-end
-
-platform :ios, '12.0'
+# Flutter 与插件（如 yunxin_alog）要求不低于 iOS 13；勿低于 11 或与 post_install 冲突
+platform :ios, '13.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -59,7 +48,7 @@ post_install do |installer|
          config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ""
          config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
          config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
-         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
              '$(inherited)',
 
@@ -99,8 +88,7 @@ post_install do |installer|
              ## dart: PermissionGroup.bluetooth
              # 'PERMISSION_BLUETOOTH=0'
            ]
-         #https://github.com/fluttercommunity/plus_plugins/issues/2154#issuecomment-1730330223
-         config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+         # 与 platform :ios 一致；勿再 delete，否则 CocoaPods 与 Flutter 对最低系统版本不一致
 
          #https://stackoverflow.com/a/77134628/5734049
          xcconfig_path = config.base_configuration_reference.real_path
