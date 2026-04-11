@@ -12,15 +12,14 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # 👇 强制在 Podfile 里插入固定版本，彻底解决冲突
-      - name: Force fix NERtcSDK in Podfile
+      # 👇 强制把 iOS 最低版本改成 13.0（解决 video_player 错误）
+      - name: Set iOS deployment target to 13.0
         script: |
-          echo "=== 强制锁定 NERtcSDK 版本 ==="
           cd im_demo/ios
+          sed -i 's/platform :ios, .*/platform :ios, "13.0"/g' Podfile
           echo "pod 'NERtcSDK', '5.9.10'" >> Podfile
-          cat Podfile
 
-      - name: Clean Pods & Install
+      - name: Clean and install pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
