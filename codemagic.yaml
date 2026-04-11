@@ -8,27 +8,30 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Get Flutter dependencies
+      - name: Get Flutter packages
         script: flutter pub get
         working_directory: im_demo
 
-      # 👇 只做一件安全的事：强制 iOS 13.0（不碰任何源、不碰任何版本）
-      - name: Set iOS deployment target to 13.0
+      # 🔥 🔥 🔥 唯一能解决冲突的终极脚本
+      - name: Force fix NERtcSDK version conflict
         script: |
-          cd im_demo/ios
+          cd $CM_BUILD_DIR/im_demo
+          
+          # 1. 修复 callkit_ui → 去掉固定版本号，让它兼容所有版本
+          find ios/.symlinks/plugins -name "netease_callkit_ui.podspec" | head -1 | xargs -I {} sed -i '' 's/NERtcSDK.*=.*5\.9\.11/NERtcSDK/g' {}
+          
+          # 2. 修复 Podfile 最低版本 iOS 13.0
+          cd ios
           sed -i '' 's/^platform :ios.*/platform :ios, "13.0"/' Podfile
 
-      - name: Clean CocoaPods
+      - name: Clean and install pods
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           pod repo update
+          pod install --repo-update
 
-      - name: Install pods
-        script: pod install
-        working_directory: im_demo/ios
-
-      - name: Build iOS without codesign
+      - name: Build iOS
         script: flutter build ios --debug --no-codesign
         working_directory: im_demo
 
