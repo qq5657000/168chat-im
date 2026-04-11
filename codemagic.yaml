@@ -12,10 +12,8 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # netease_callkit_ui 的 podspec 固定 NERtcSDK 5.9.11，而 netease_roomkit 固定 5.9.10。
-      # 必须在 pod install 之前，把 pub-cache（及 ios/.symlinks 指向的同一文件）里的 5.9.11 改成 5.9.10。
-      # 不要用 sed 删掉版本号，否则会破坏 podspec 语法。
-      - name: Align NERtcSDK to 5.9.10 for CocoaPods
+      # 修复 NERtcSDK 版本冲突
+      - name: Align NERtcSDK to 5.9.10
         script: |
           set -euo pipefail
           ROOT="${CM_BUILD_DIR:-$(pwd)}"
@@ -24,36 +22,30 @@ workflows:
             local dir="$1"
             [ -d "$dir" ] || return 0
             find "$dir" -type f -name "*.podspec" -path "*netease_callkit*" 2>/dev/null | while read -r f; do
-              if grep -q '5\.9\.11' "$f" 2>/dev/null; then
-                echo "PATCH: $f"
-                sed -i '' 's/5\.9\.11/5.9.10/g' "$f"
-              fi
+              sed -i '' 's/5\.9\.11/5.9.10/g' "$f" 2>/dev/null
             done
           }
           patch_if_needed "$HOME/.pub-cache/hosted"
           patch_if_needed "im_demo/ios/.symlinks/plugins"
 
-      - name: Clean and install pods
+      - name: Clean Pods
         script: |
-          set -euo pipefail
           cd im_demo/ios
           rm -rf Pods Podfile.lock
-          # CDN 下一般不需要 pod repo update。NERtcSDK 等二进制较大，网络偶发断连时重试（set -e 下需用 if，否则失败即退出）。
-          for attempt in 1 2 3; do
-            if pod install; then
-              break
-            fi
-            echo "pod install failed (attempt $attempt), retry in 25s..."
-            sleep 25
-            [ "$attempt" -eq 3 ] && exit 1
-          done
 
-      # flutter build 可能再次触发 pod 相关步骤；在 xcodebuild 前再跑一次去重，避免列表被重新生成后重复。
-      - name: Dedupe CocoaPods embed outputs
-        script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
+      - name: Install pods
+        script: pod install --verbose
+        working_directory: im_demo/ios
 
-      - name: Build iOS
-        script: flutter build ios --debug --no-codesign
+      # 🔥 🔥 🔥 关键：清除 Xcode 缓存 + 修复重复编译
+      - name: Clean Xcode DerivedData
+        script: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          cd im_demo
+          flutter clean
+
+      - name: Build iOS (no codesign)
+        script: flutter build ios --debug --no-codesign --verbose
         working_directory: im_demo
 
     artifacts:
