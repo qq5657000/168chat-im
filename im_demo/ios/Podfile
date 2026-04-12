@@ -90,6 +90,9 @@ post_install do |installer|
          config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
          config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+         # Xcode 15+/Swift 6：显式模块扫描与云信 NERoomKit/NIMSDK 等 XCFramework 组合时易出现
+         # Clang dependency scanner / module 'NIMSDK' not found（与是否 static linkage 无关）
+         config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
              '$(inherited)',
 
@@ -138,6 +141,17 @@ post_install do |installer|
          File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
          end
 
+  end
+
+  installer.aggregate_targets.each do |aggregate_target|
+    next unless aggregate_target.user_project
+
+    aggregate_target.user_project.targets.each do |t|
+      t.build_configurations.each do |config|
+        config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+      end
+    end
+    aggregate_target.user_project.save
   end
 
   # Xcode 15+：nim_core + roomkit 等对 NIMSDK 重复嵌入、资源重复产出 Assets.car → Multiple commands produce
