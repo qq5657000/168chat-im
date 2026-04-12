@@ -70,9 +70,10 @@ def inject_dedupe_before_cocoapods_embed(installer)
 end
 
 target 'Runner' do
-  # 动态 framework 时 nim_core_v2 与 netease_roomkit 会各自嵌入 NIMSDK/NIMQuic 等，触发
-  # "Multiple commands produce .../NIMSDK.framework"。静态链接可避免重复 Embed。
-  use_frameworks! :linkage => :static
+  # 勿用 use_frameworks! :linkage => :static：NERoomKit / NECoreIM2Kit 编译时需要 NIMSDK 以 module 形式可见，
+  # 静态链接常见报错：module 'NIMSDK' not found / could not build module 'NERoomKit'。
+  # 重复嵌入由 install! :disable_input_output_paths 与 dedupe_cocoapods_embed.rb 缓解。
+  use_frameworks!
   use_modular_headers!
   pod 'GCDWebServer', '3.5.4'
 
