@@ -9,6 +9,13 @@ platform :ios, '13.0'
 # Xcode 15+：不向 Embed/Copy 脚本挂 input/output xcfilelist，避免同一产物路径被登记两次 → Multiple commands produce
 install! 'cocoapods', :disable_input_output_paths => true
 
+# 关于「强制同一套 NIMSDK」：
+# - Dart 包 nim_core_v2 的 10.9.x 与 CocoaPods 里 pod NIMSDK 的 10.9.x **不是同一个版本体系**，不要写 pod 'NIMSDK', '10.9.6'。
+# - 若需显式锁定，请先在本机（Mac）执行：flutter pub get 后打开
+#   ~/.pub-cache/hosted/pub.dev/nim_core_v2-<ver>/ios/nim_core_v2.podspec
+#   查看 s.dependency 'NIMSDK' / NIMSDK_LITE 的精确版本，再写 pod 'NIMSDK', 'x.y.z'（需与 netease_roomkit 不冲突）。
+# - 与 netease_roomkit 并存时建议以云信官方「IM + 互动直播」兼容说明为准，单靠 Podfile 无法保证「彻底」解决所有冲突。
+
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
