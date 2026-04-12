@@ -1,5 +1,6 @@
+pod 'NIMSDK', '10.9.5'
 # Uncomment this line to define a global platform for your project
-# platform :ios, '12.0'
+# platform :ios, '13.0'
 
 # 使用 CDN（增量拉取）；勿用 github.com/CocoaPods/Specs.git 全量仓库，CI 上易超时（curl 大文件中断）。
 source 'https://cdn.cocoapods.org/'
