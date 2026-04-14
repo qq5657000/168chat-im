@@ -38,7 +38,7 @@ workflows:
           cd im_demo/ios
           rm -rf Pods Podfile.lock
           for attempt in 1 2 3; do
-            if pod install; then
+            if pod install --verbose; then
               break
             fi
             echo "pod install failed (attempt $attempt), retry in 25s..."
@@ -54,10 +54,15 @@ workflows:
         script: |
           set -eo pipefail
           cd im_demo/ios
-          pod install
+          pod install --verbose
           ruby dedupe_cocoapods_embed.rb Pods
           cd ..
           flutter build ios --debug --no-codesign
 
+    # ✅ 关键：自动导出 Podfile.lock 和依赖文件，失败也能下载
     artifacts:
       - im_demo/build/ios/iphoneos/Runner.app
+      - im_demo/ios/Podfile.lock
+      - im_demo/ios/Podfile
+      - im_demo/ios/Pods/Manifest.lock
+      - /tmp/xcodebuild_logs/*.log
