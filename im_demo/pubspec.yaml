@@ -84,7 +84,7 @@ dev_dependencies:
 # 临时固定 nim_core_v2：10.9.6 在部分 iOS 工程会报 V2NIMPostscript 等类型找不到（与原生 NIMSDK/编译链有关）。
 # 10.9.5+2 为上一稳定修订（changelog：NIMSDK 升至 10.9.75 等）。若需 10.9.6 新能力，去掉 overrides 并向云信要兼容矩阵或等修复。
 dependency_overrides:
-  nim_core_v2: "10.9.60"
+  nim_core_v2: "10.9.6"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
