@@ -81,8 +81,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
 
-# 临时固定 nim_core_v2：10.9.6 在部分 iOS 工程会报 V2NIMPostscript 等类型找不到（与原生 NIMSDK/编译链有关）。
-# 10.9.5+2 为上一稳定修订（changelog：NIMSDK 升至 10.9.75 等）。若需 10.9.6 新能力，去掉 overrides 并向云信要兼容矩阵或等修复。
+# 可选：与 nim_chatkit 依赖的 nim_core_v2 主版本对齐。iOS 若报 V2NIMPostscript 等 Swift 类型缺失，请优先保证
+# ios/Podfile 中 NIMSDK_LITE/FCS 10.9.81 + NERtcSDK 5.9.11 + SPECIAL_VERSION / FCS_SPECIAL_VERSION（见官方 room 示例）。
 dependency_overrides:
   nim_core_v2: "10.9.6"
 

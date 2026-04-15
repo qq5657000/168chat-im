@@ -12,25 +12,7 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
-      # netease_callkit / netease_callkit_ui 的 podspec 可能固定 NERtcSDK 5.9.11，需与 netease_roomkit 的 5.9.10 对齐。
-      # 勿用函数名 patch（与系统 patch 冲突）；勿在 CM_BUILD_DIR 未设置时用 set -u。
-      - name: Fix NERtcSDK version conflict
-        script: |
-          set -eo pipefail
-          REPO="${CM_BUILD_DIR:-.}"
-          cd "$REPO"
-          ner_patch_podspecs() {
-            local dir="$1"
-            [ -d "$dir" ] || return 0
-            find "$dir" -type f \( -name 'netease_callkit.podspec' -o -name 'netease_callkit_ui.podspec' \) 2>/dev/null | while read -r f; do
-              [ -f "$f" ] || continue
-              grep -q '5\.9\.11' "$f" 2>/dev/null || continue
-              echo "PATCH: $f"
-              sed -i '' 's/5\.9\.11/5.9.10/g' "$f"
-            done
-          }
-          ner_patch_podspecs "$HOME/.pub-cache/hosted"
-          ner_patch_podspecs "im_demo/ios/.symlinks/plugins"
+      # NERtcSDK 由 im_demo/ios/Podfile 显式 pin 为 5.9.11（与云信官方 room 示例及 NIMSDK_LITE/FCS 10.9.81 一致）；勿再改 pub-cache 内 podspec 降级。
 
       - name: Clean & Install Pods
         script: |
