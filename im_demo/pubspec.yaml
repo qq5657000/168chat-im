@@ -58,7 +58,7 @@ dependencies:
   http: ^1.1.0
   # 云信房间组件（群内听课/在线课堂）
   # 官方文档: https://pub.dev/packages/netease_roomkit
-  netease_roomkit: ^1.44.4
+  netease_roomkit: ^1.43.0
 
   # MD5 签名（用于房间失效通知接口的防伪验证）
   crypto: ^3.0.3
