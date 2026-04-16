@@ -26,16 +26,16 @@ workflows:
               return 0
             fi
             ruby - "$file" <<'RUBY'
-path = ARGV[0]
-text = File.read(path)
-needle = "s.dependency \"NERoomKit/Base_FCS_Special\", \"1.43.0\""
-insert = "#{needle}\n      s.dependency 'NEXKitBase'"
-if text.include?(needle)
-  File.write(path, text.sub(needle, insert))
-  puts "PATCHED: #{path}"
-else
-  warn "SKIP(no needle): #{path}"
-end
+            path = ARGV[0]
+            text = File.read(path)
+            needle = "s.dependency \"NERoomKit/Base_FCS_Special\", \"1.43.0\""
+            insert = "#{needle}\n      s.dependency 'NEXKitBase'"
+            if text.include?(needle)
+              File.write(path, text.sub(needle, insert))
+              puts "PATCHED: #{path}"
+            else
+              warn "SKIP(no needle): #{path}"
+            end
 RUBY
           }
           patch_roomkit_podspec "$HOME/.pub-cache/hosted/pub.dev/netease_roomkit-1.43.0/ios/netease_roomkit.podspec"
