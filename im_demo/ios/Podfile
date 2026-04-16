@@ -102,6 +102,8 @@ post_install do |installer|
          # Xcode 15+/Swift 6：显式模块扫描与云信 NERoomKit/NIMSDK 等 XCFramework 组合时易出现
          # Clang dependency scanner / module 'NIMSDK' not found（与是否 static linkage 无关）
          config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+         # 云信反馈当前仅支持 Swift 5，统一设置 Pods target 的 Swift 语言版本
+         config.build_settings['SWIFT_VERSION'] = '5.0'
          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
              '$(inherited)',
 
@@ -158,6 +160,7 @@ post_install do |installer|
     aggregate_target.user_project.targets.each do |t|
       t.build_configurations.each do |config|
         config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+        config.build_settings['SWIFT_VERSION'] = '5.0'
       end
     end
     aggregate_target.user_project.save

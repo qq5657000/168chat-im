@@ -15,6 +15,32 @@ workflows:
         script: flutter pub get
         working_directory: im_demo
 
+      - name: Patch roomkit podspec NEXKitBase
+        script: |
+          set -eo pipefail
+          patch_roomkit_podspec() {
+            local file="$1"
+            [ -f "$file" ] || return 0
+            if grep -q "s.dependency 'NEXKitBase'" "$file"; then
+              echo "NEXKitBase already exists: $file"
+              return 0
+            fi
+            ruby - "$file" <<'RUBY'
+path = ARGV[0]
+text = File.read(path)
+needle = "s.dependency \"NERoomKit/Base_FCS_Special\", \"1.43.0\""
+insert = "#{needle}\n      s.dependency 'NEXKitBase'"
+if text.include?(needle)
+  File.write(path, text.sub(needle, insert))
+  puts "PATCHED: #{path}"
+else
+  warn "SKIP(no needle): #{path}"
+end
+RUBY
+          }
+          patch_roomkit_podspec "$HOME/.pub-cache/hosted/pub.dev/netease_roomkit-1.43.0/ios/netease_roomkit.podspec"
+          patch_roomkit_podspec "im_demo/ios/.symlinks/plugins/netease_roomkit/ios/netease_roomkit.podspec"
+
       # NERtcSDK 由 im_demo/ios/Podfile 显式 pin 为 5.9.11（与云信官方 room 示例及 NIMSDK_LITE/FCS 10.9.81 一致）；勿再改 pub-cache 内 podspec 降级。
 
       - name: Clean & Install Pods
