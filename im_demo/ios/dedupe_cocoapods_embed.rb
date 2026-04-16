@@ -50,49 +50,6 @@ def dedupe_xcfilelists(support)
   end
 end
 
-def dedupe_frameworks_sh(support)
-  path = File.join(support, 'Pods-Runner-frameworks.sh')
-  return unless File.exist?(path)
-
-  seen = {}
-  out = []
-  File.readlines(path).each do |line|
-    if line =~ /install_framework\s+/ && (m = line.match(/([^\/\s"'`]+\.framework)/))
-      fw = m[1]
-      next if seen[fw]
-
-      seen[fw] = true
-    end
-    out << line
-  end
-  File.write(path, out.join)
-end
-
-def dedupe_resources_sh(support)
-  path = File.join(support, 'Pods-Runner-resources.sh')
-  return unless File.exist?(path)
-
-  seen = {}
-  out = []
-  File.readlines(path).each do |line|
-    if line =~ /install_resource\s+/
-      key = nil
-      if (m = line.match(/([^\/\s"'`]+\.(bundle|xcassets))/))
-        key = m[1]
-      elsif line.include?('Assets.car')
-        key = 'Assets.car'
-      end
-      if key
-        next if seen[key]
-
-        seen[key] = true
-      end
-    end
-    out << line
-  end
-  File.write(path, out.join)
-end
-
 pods_root = ARGV[0] ? File.expand_path(ARGV[0]) : File.join(__dir__, 'Pods')
 support = File.join(pods_root, 'Target Support Files', 'Pods-Runner')
 
@@ -102,6 +59,4 @@ unless Dir.exist?(support)
 end
 
 dedupe_xcfilelists(support)
-dedupe_frameworks_sh(support)
-dedupe_resources_sh(support)
 puts "[dedupe_cocoapods_embed] ok: #{support}"
