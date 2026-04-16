@@ -1,8 +1,11 @@
 # Codemagic 说明：
+# - 手动「Start build」时必须在网页上选择工作流：要 .ipa 请选「ios-ipa」，不要选「ios-debug」。
+#   若只配置了 push 触发，默认往往只跑第一个工作流（ios-debug），产物里永远不会有 .ipa。
 # - ios-debug：`flutter build ios --debug --no-codesign` 只产出未签名的 Runner.app，不会生成 .ipa（这是预期行为）。
-# - ios-ipa：需先在 Codemagic 配置 iOS 证书/描述文件（或 App Store Connect 集成），再执行 `flutter build ipa` 才会得到 .ipa。
-#   签名与分发方式见：https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
-#   与 App Store Connect：https://docs.codemagic.io/flutter-publishing/publishing-to-app-store/
+# - ios-ipa：需在 Codemagic 应用里配置 iOS 签名（证书 + 描述文件，或 App Store Connect API Key 集成），
+#   否则会卡在 `flutter build ipa` 或 `xcode-project use-profiles`。文档：
+#   https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
+#   https://docs.codemagic.io/flutter-publishing/publishing-to-app-store/
 
 workflows:
   ios-debug:
@@ -136,6 +139,10 @@ workflows:
 
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
+
+      # 签名前初始化钥匙串（Codemagic 官方 iOS 流程常见步骤）
+      - name: Initialize keychain for codesigning
+        script: keychain initialize
 
       # 将 Codemagic 中的描述文件应用到 Xcode 工程（与 ios_signing 配合）
       - name: Apply provisioning profiles (Codemagic)
