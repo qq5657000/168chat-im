@@ -95,9 +95,9 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.hestia.n168chat.app.flutter.im
         # 这里替换成你上传的 .mobileprovision 的 Reference name
-        provisioning_profile: 168chat_reference_profiles
+        #provisioning_profile: 168chat_reference_profiles
         # 这里替换成你上传的 .p12 证书的 Reference name
-        certificate: ios_reference
+        #certificate: ios_reference
       # 若使用 App Store Connect 自动拉描述文件，在 Codemagic UI 绑定后取消下面注释并改成你的集成标识名：
       # integrations:
       #   app_store_connect: <your_integration_identifier>
