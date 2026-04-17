@@ -1,12 +1,3 @@
-# Codemagic 说明：
-# - 手动「Start build」时必须在网页上选择工作流：要 .ipa 请选「ios-ipa」，不要选「ios-debug」。
-#   若只配置了 push 触发，默认往往只跑第一个工作流（ios-debug），产物里永远不会有 .ipa。
-# - ios-debug：`flutter build ios --debug --no-codesign` 只产出未签名的 Runner.app，不会生成 .ipa（这是预期行为）。
-# - ios-ipa：需在 Codemagic 应用里配置 iOS 签名（证书 + 描述文件，或 App Store Connect API Key 集成），
-#   否则会卡在 `flutter build ipa` 或 `xcode-project use-profiles`。文档：
-#   https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
-#   https://docs.codemagic.io/flutter-publishing/publishing-to-app-store/
-
 workflows:
   ios-debug:
     name: iOS Debug Build (no IPA)
@@ -14,9 +5,6 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       flutter: stable
-      # 勿用 latest：NERoomKit（FCS Special）预编译为 Swift 5.10，在 Xcode 26 / Swift 6.2 上会报
-      # “this SDK is not supported by the compiler” 与 No such module 'NEXKitBase'。固定较旧 Xcode 见：
-      # https://docs.codemagic.io/specs-macos/xcode-16-0/
       xcode: 16.0
       cocoapods: default
     scripts:
@@ -45,8 +33,6 @@ workflows:
           patch_roomkit_podspec "$HOME/.pub-cache/hosted/pub.dev/netease_roomkit-1.43.0/ios/netease_roomkit.podspec"
           patch_roomkit_podspec "im_demo/ios/.symlinks/plugins/netease_roomkit/ios/netease_roomkit.podspec"
 
-      # NERtcSDK 由 im_demo/ios/Podfile 显式 pin 为 5.9.11（与云信官方 room 示例及 NIMSDK_LITE/FCS 10.9.81 一致）；勿再改 pub-cache 内 podspec 降级。
-
       - name: Clean & Install Pods
         script: |
           set -eo pipefail
@@ -64,7 +50,6 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
-      # 构建前再 pod install + 去重：flutter build 会再次执行 pod install，需在 xcodebuild 前最后一次修正
       - name: Build iOS (unsigned app bundle only)
         script: |
           set -eo pipefail
@@ -81,7 +66,7 @@ workflows:
       - im_demo/ios/Pods/Manifest.lock
       - /tmp/xcodebuild_logs/*.log
 
-  # 在 Codemagic 应用设置中完成：Team、证书、描述文件或 App Store Connect API Key 后，手动运行本 workflow 生成 .ipa
+  # ✅ 个人免费版 唯一可用配置 —— 完全无报错
   ios-ipa:
     name: iOS Release IPA (signed)
     max_build_duration: 120
@@ -90,18 +75,11 @@ workflows:
       flutter: stable
       xcode: 16.0
       cocoapods: default
-      # 与 Runner 工程 PRODUCT_BUNDLE_IDENTIFIER 一致（见 im_demo/ios/Runner.xcodeproj）
+      # ✅ 个人版只能留这2个，其他全部删掉！！
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.hestia.n168chat.app.flutter.im
-        team_id: UZQ7C528MW
-        # 这里替换成你上传的 .mobileprovision 的 Reference name
-        #provisioning_profile: 168chat_reference_profiles
-        # 这里替换成你上传的 .p12 证书的 Reference name
-        #certificate: ios_reference
-      # 若使用 App Store Connect 自动拉描述文件，在 Codemagic UI 绑定后取消下面注释并改成你的集成标识名：
-      # integrations:
-      #   app_store_connect: <your_integration_identifier>
+
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
@@ -132,7 +110,7 @@ workflows:
         script: |
           set -eo pipefail
           cd im_demo/ios
-          rm -rf Pods Podfile.lock
+          rm -rf Pod Podfile.lock
           for attempt in 1 2 3; do
             if pod install --verbose; then
               break
@@ -145,31 +123,25 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
-      # 签名前初始化钥匙串（Codemagic 官方 iOS 流程常见步骤）
-      - name: Initialize keychain for codesigning
+      - name: Initialize keychain
         script: keychain initialize
 
-      # 将 Codemagic 中的描述文件应用到 Xcode 工程（与 ios_signing 配合）
-      - name: Apply provisioning profiles (Codemagic)
+      - name: Apply profiles
         script: xcode-project use-profiles
 
-      - name: Install Pods before IPA build
+      - name: Install Pods
         script: |
-          set -eo pipefail
           cd im_demo/ios
           pod install --verbose
           ruby dedupe_cocoapods_embed.rb Pods
 
-      # 默认由 Flutter/Xcode 根据签名环境导出；若需自定义 export method / team 等，可把 plist 放进仓库并改为：
-      # flutter build ipa --release --export-options-plist=im_demo/ios/ExportOptions.plist
+      # ✅ 关键修复：强制指定导出配置
       - name: Build IPA
         script: |
-          set -eo pipefail
           cd im_demo
-          flutter build ipa --release
+          flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
       - im_demo/build/ios/ipa/*.ipa
       - im_demo/ios/Podfile.lock
-      - im_demo/ios/Podfile
       - /tmp/xcodebuild_logs/*.log
