@@ -130,6 +130,13 @@ workflows:
           pod install --verbose
           ruby dedupe_cocoapods_embed.rb Pods
 
+      # 👇 这里加了自动修复脚本，解决 168chat2 报错
+      - name: 修复项目签名配置（必加）
+        script: |
+          cd im_demo/ios
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = "168chat2"/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' Runner.xcodeproj/project.pbxproj
+
       - name: Build IPA
         script: |
           cd im_demo
