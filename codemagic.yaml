@@ -66,7 +66,6 @@ workflows:
       - im_demo/ios/Pods/Manifest.lock
       - /tmp/xcodebuild_logs/*.log
 
-  # ✅ 个人免费版 唯一可用配置 —— 完全无报错
   ios-ipa:
     name: iOS Release IPA (signed)
     max_build_duration: 120
@@ -75,7 +74,6 @@ workflows:
       flutter: stable
       xcode: 16.0
       cocoapods: default
-      # ✅ 个人版只能留这2个，其他全部删掉！！
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.hestia.n168chat.app.flutter.im
@@ -110,7 +108,7 @@ workflows:
         script: |
           set -eo pipefail
           cd im_demo/ios
-          rm -rf Pod Podfile.lock
+          rm -rf Pods Podfile.lock
           for attempt in 1 2 3; do
             if pod install --verbose; then
               break
@@ -135,7 +133,6 @@ workflows:
           pod install --verbose
           ruby dedupe_cocoapods_embed.rb Pods
 
-      # ✅ 关键修复：强制指定导出配置
       - name: Build IPA
         script: |
           cd im_demo
