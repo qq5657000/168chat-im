@@ -50,20 +50,15 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
-      - name: Build iOS (unsigned app bundle only)
+      - name: Build iOS (unsigned app bundle)
         script: |
           set -eo pipefail
-          cd im_demo/ios
-          pod install --verbose
-          ruby dedupe_cocoapods_embed.rb Pods
-          cd ..
+          cd im_demo
           flutter build ios --debug --no-codesign
 
     artifacts:
       - im_demo/build/ios/iphoneos/Runner.app
       - im_demo/ios/Podfile.lock
-      - im_demo/ios/Podfile
-      - im_demo/ios/Pods/Manifest.lock
       - /tmp/xcodebuild_logs/*.log
 
   ios-ipa:
@@ -121,21 +116,20 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
-      - name: Auto sign with App Store Connect API
+      - name: Use profiles
         script: xcode-project use-profiles
 
-      - name: Install Pods
-        script: |
-          cd im_demo/ios
-          pod install --verbose
-          ruby dedupe_cocoapods_embed.rb Pods
-
-      # 👇 这里加了自动修复脚本，解决 168chat2 报错
-      - name: 修复项目签名配置（必加）
+      - name: Fix signing config (remove 168chat2)
         script: |
           cd im_demo/ios
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = "168chat2"/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = 168chat2/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' Runner.xcodeproj/project.pbxproj
+
+      - name: Install Pods again
+        script: |
+          cd im_demo/ios
+          pod install --verbose
 
       - name: Build IPA
         script: |
