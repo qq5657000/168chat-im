@@ -121,18 +121,14 @@ workflows:
           set -eo pipefail
           cd im_demo/ios
           TEAM_ID="${IOS_TEAM_ID:-UZQ7C528MW}"
-          sed -i '' '/168chat2/d' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' Runner.xcodeproj/project.pbxproj
+          keychain initialize
+          keychain add-certificates
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]" = .*/"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ""/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_IDENTITY = .*/CODE_SIGN_IDENTITY = ""/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = ""/g' Runner.xcodeproj/project.pbxproj
           sed -i '' "s/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
           sed -i '' "s/\"DEVELOPMENT_TEAM\\[sdk=iphoneos\\*\\]\" = .*/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
           if [ -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ] && [ -n "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ -n "${APP_STORE_CONNECT_PRIVATE_KEY:-}" ]; then
-            keychain initialize
             app-store-connect fetch-signing-files "com.hestia.n168chat.app.flutter.im" --type IOS_APP_STORE --create
-            keychain add-certificates
           else
             echo "App Store Connect API environment variables are missing, skip fetch-signing-files and use uploaded cert/profile."
           fi
