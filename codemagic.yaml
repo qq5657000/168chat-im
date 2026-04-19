@@ -1,3 +1,66 @@
+workflows:
+  ios-debug:
+    name: iOS Debug Build (no IPA)
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: 16.0
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+        working_directory: im_demo
+
+      - name: Patch roomkit podspec NEXKitBase
+        script: |
+          set -eo pipefail
+          patch_roomkit_podspec() {
+            local file="$1"
+            [ -f "$file" ] || return 0
+            if grep -q "s.dependency 'NEXKitBase'" "$file"; then
+              echo "NEXKitBase already exists: $file"
+              return 0
+            fi
+            if grep -q 's.dependency "NERoomKit/Base_FCS_Special", "1.43.0"' "$file"; then
+              awk '{print} /s.dependency "NERoomKit\/Base_FCS_Special", "1.43.0"/ {print "      s.dependency '\''NEXKitBase'\''"}' "$file" > "$file.tmp"
+              mv "$file.tmp" "$file"
+              echo "PATCHED: $file"
+            else
+              echo "SKIP(no needle): $file"
+            fi
+          }
+          patch_roomkit_podspec "$HOME/.pub-cache/hosted/pub.dev/netease_roomkit-1.43.0/ios/netease_roomkit.podspec"
+          patch_roomkit_podspec "im_demo/ios/.symlinks/plugins/netease_roomkit/ios/netease_roomkit.podspec"
+
+      - name: Clean & Install Pods
+        script: |
+          set -eo pipefail
+          cd im_demo/ios
+          rm -rf Pods Podfile.lock
+          for attempt in 1 2 3; do
+            if pod install --verbose; then
+              break
+            fi
+            echo "pod install failed (attempt $attempt), retry in 25s..."
+            sleep 25
+            [ "$attempt" -eq 3 ] && exit 1
+          done
+
+      - name: Dedupe CocoaPods embed outputs
+        script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
+
+      - name: Build iOS (unsigned app bundle)
+        script: |
+          set -eo pipefail
+          cd im_demo
+          flutter build ios --debug --no-codesign
+
+    artifacts:
+      - im_demo/build/ios/iphoneos/Runner.app
+      - im_demo/ios/Podfile.lock
+      - /tmp/xcodebuild_logs/*.log
+
   ios-ipa:
     name: iOS Release IPA (signed)
     max_build_duration: 120
@@ -56,15 +119,12 @@
       - name: Use profiles
         script: xcode-project use-profiles
 
-      # 👇 这里用最强清理脚本
-      - name: 强制清除所有签名冲突（终极版）
+      - name: Fix signing config (remove 168chat2)
         script: |
           cd im_demo/ios
-          sed -i '' '/168chat2/d' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_STYLE = Manual;/CODE_SIGN_STYLE = Automatic;/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = "168chat2"/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = 168chat2/PROVISIONING_PROFILE_SPECIFIER = ""/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_STYLE = Manual/CODE_SIGN_STYLE = Automatic/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' '/PROVISIONING_PROFILE = /d' Runner.xcodeproj/project.pbxproj
 
       - name: Install Pods again
         script: |
@@ -73,7 +133,9 @@
 
       - name: Build IPA
         script: |
-          cd im_demo
+          cd im_demo/ios
+          sed -i '' '/168chat2/d' Runner.xcodeproj/project.pbxproj
+          cd ..
           flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
