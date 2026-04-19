@@ -135,9 +135,11 @@ workflows:
         script: |
           cd im_demo/ios
           sed -i '' '/168chat2/d' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY = .*/CODE_SIGN_IDENTITY = "";/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\]".*//g' Runner.xcodeproj/project.pbxproj
           cd ..
           flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
-
+          
     artifacts:
       - im_demo/build/ios/ipa/*.ipa
       - im_demo/ios/Podfile.lock
