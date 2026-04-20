@@ -36,16 +36,20 @@ workflows:
         script: |
           cd im_demo/ios
           rm -rf Pods Podfile.lock
-          pod install --verbose
+          pod install
 
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
-      # 关键：无签名打包
+      # 无签名打包
       - name: Build unsigned IPA
         script: |
           cd im_demo
-          flutter build ipa --release --no-codesign
+          flutter build ios --release --no-codesign
+          mkdir -p build/ios/ipa
+          cp build/ios/iphoneos/Runner.app build/ios/ipa/
+          cd build/ios
+          zip -r ipa/Runner.ipa iphoneos
 
     artifacts:
       - im_demo/build/ios/ipa/*.ipa
@@ -54,8 +58,8 @@ workflows:
       scripts:
         - name: Upload to PGYER
           script: |
-            IPA_PATH=$(find im_demo/build/ios/ipa -name "*.ipa" | head -1)
-            echo "Found IPA: $IPA_PATH"
+            IPA_PATH="$CM_BUILD_DIR/im_demo/build/ios/ipa/Runner.ipa"
+            echo "上传IPA: $IPA_PATH"
             curl -F "file=@$IPA_PATH" \
             -F "_api_key=64da53cb5abab89565c027d5426ba36a" \
             https://upload.pgyer.com/apiv2/app/upload
