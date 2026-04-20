@@ -72,6 +72,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.hestia.n168chat.app.flutter.im
+      vars:
+        BUNDLE_ID: com.hestia.n168chat.app.flutter.im
 
     scripts:
       - name: Get Flutter packages
@@ -120,27 +122,14 @@ workflows:
         script: |
           set -eo pipefail
           cd im_demo/ios
-          export BUNDLE_ID="com.hestia.n168chat.app.flutter.im"
           keychain initialize
           keychain add-certificates
 
-          if [ -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ] && [ -n "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ -n "${APP_STORE_CONNECT_PRIVATE_KEY:-}" ]; then
-            app-store-connect fetch-signing-files "${BUNDLE_ID}" --type IOS_APP_STORE --create
-            xcode-project use-profiles \
-              --project Runner.xcodeproj \
-              --archive-method app-store \
-              -v \
-              --code-signing-setup-verbose-logging \
-              --export-options-plist /Users/builder/export_options.plist
-          else
-            echo "Manual signing: generate export_options.plist from uploaded .mobileprovision (bypasses xcode-project use-profiles)."
-            eval "$(python3 codemagic_manual_signing.py)"
-            sed -i '' "s/DEVELOPMENT_TEAM = 569GNZ5392;/DEVELOPMENT_TEAM = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
-            sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = '"${TEAM_ID}"';/g' Runner.xcodeproj/project.pbxproj
-            sed -i '' "s/\"DEVELOPMENT_TEAM\[sdk=iphoneos\*\]\" = 569GNZ5392;/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
-            sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Distribution"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution"/g' Runner.xcodeproj/project.pbxproj
-            sed -i '' "s|\"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]\" = im_flutter_uikit_dis;|\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"${PROFILE_NAME}\";|g" Runner.xcodeproj/project.pbxproj
-          fi
+          app-store-connect fetch-signing-files "${BUNDLE_ID}" --type IOS_APP_STORE --create
+          xcode-project use-profiles \
+            --project Runner.xcodeproj \
+            --archive-method app-store \
+            --export-options-plist /Users/builder/export_options.plist
 
       - name: Build IPA
         script: |
@@ -151,3 +140,21 @@ workflows:
       - im_demo/build/ios/ipa/*.ipa
       - im_demo/ios/Podfile.lock
       - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      # app_store_connect:
+      #   api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+      #   key_id: $APP_STORE_CONNECT_KEY_ID
+      #   issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+      #   submit_to_testflight: true
+      #   submit_to_external_test: true
+      #   skip_waiting_for_build_processing: true
+
+      scripts:
+        - name: Upload to PGYER
+          script: |
+            IPA_PATH=$(find im_demo/build/ios/ipa -name "*.ipa" | head -1)
+            echo "Found IPA: $IPA_PATH"
+            curl -F "file=@$IPA_PATH" \
+              -F "_api_key=$PGYER_API_KEY" \
+              https://upload.pgyer.com/apiv2/app/upload
