@@ -81,9 +81,9 @@ workflows:
     name: iOS TestFlight (签名 + 上传 App Store Connect)
     max_build_duration: 120
     instance_type: mac_mini_m2
-    # 与 Codemagic「Teams → Integrations → Developer Portal」里添加的 App Store Connect API key 名称一致（例如 codemagic）
+    # 与 Codemagic「Integrations」里该条 App Store Connect API key 的名称完全一致（只能写一个名称）
     integrations:
-      app_store_connect: codemagic adm
+      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: 16.0
@@ -133,20 +133,35 @@ workflows:
       - name: Dedupe CocoaPods embed outputs
         script: ruby im_demo/ios/dedupe_cocoapods_embed.rb im_demo/ios/Pods
 
+      # 已在 Codemagic Settings 上传 .p12 + App Store 描述文件时：不要先跑 fetch-signing-files --create
+      #（会在「无本地私钥」场景下报 Cannot save Signing Certificates without certificate private key）。
+      # 若改为纯 API 自动拉证书，可设环境变量 CM_USE_FETCH_SIGNING=1（且 API 密钥需具备创建证书的权限）。
       - name: Code signing (App Store)
         script: |
           set -eo pipefail
           cd im_demo/ios
           export BUNDLE_ID="com.hestia.n168chat.app.flutter.im"
           keychain initialize
-          app-store-connect fetch-signing-files "${BUNDLE_ID}" --type IOS_APP_STORE --create
           keychain add-certificates
-          xcode-project use-profiles \
-            --project Runner.xcodeproj \
-            --archive-method app-store \
-            -v \
-            --code-signing-setup-verbose-logging \
-            --export-options-plist /Users/builder/export_options.plist
+
+          if [ "${CM_USE_FETCH_SIGNING:-0}" = "1" ]; then
+            app-store-connect fetch-signing-files "${BUNDLE_ID}" --type IOS_APP_STORE --create
+            keychain add-certificates
+            xcode-project use-profiles \
+              --project Runner.xcodeproj \
+              --archive-method app-store \
+              -v \
+              --code-signing-setup-verbose-logging \
+              --export-options-plist /Users/builder/export_options.plist
+          else
+            echo "Using uploaded .p12 + .mobileprovision (skip fetch-signing-files --create)."
+            eval "$(python3 codemagic_manual_signing.py)"
+            sed -i '' "s/DEVELOPMENT_TEAM = 569GNZ5392;/DEVELOPMENT_TEAM = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
+            sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = '"${TEAM_ID}"';/g' Runner.xcodeproj/project.pbxproj
+            sed -i '' "s/\"DEVELOPMENT_TEAM\[sdk=iphoneos\*\]\" = 569GNZ5392;/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = ${TEAM_ID};/g" Runner.xcodeproj/project.pbxproj
+            sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Distribution"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution"/g' Runner.xcodeproj/project.pbxproj
+            sed -i '' "s|\"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]\" = [^;]*;|\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"${PROFILE_NAME}\";|g" Runner.xcodeproj/project.pbxproj
+          fi
 
       - name: Build IPA
         script: |
