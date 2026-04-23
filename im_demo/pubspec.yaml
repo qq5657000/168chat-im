@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 10.7.1
+version: 10.7.2
 
 environment:
   sdk: ">=2.16.1 <4.0.0"
@@ -80,6 +80,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  ios: true
+  image_path: "assets/logo1024.png" # 本地一张纯白背景、无透明原图
+  remove_alpha_ios: true # 【最关键】自动给所有iOS图标（包括1024大图）强制移除透明Alpha！！！
 
 # 可选：与 nim_chatkit 依赖的 nim_core_v2 主版本对齐。iOS 若报 V2NIMPostscript 等 Swift 类型缺失，请优先保证
 # ios/Podfile 中 NIMSDK_LITE/FCS 10.9.81 + NERtcSDK 5.9.11 + SPECIAL_VERSION / FCS_SPECIAL_VERSION（见官方 room 示例）。
