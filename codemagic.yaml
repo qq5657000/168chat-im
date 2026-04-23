@@ -10,6 +10,8 @@ workflows:
       flutter: stable
       xcode: 16.0
       cocoapods: default
+      groups:
+        - pgy  # 加上这一行！！！导入你存放变量的pgy分组
 
     scripts:
       - name: Get Flutter packages
