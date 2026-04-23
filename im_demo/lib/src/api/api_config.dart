@@ -10,8 +10,8 @@ class ApiConfig {
   static const String devBaseUrl = 'http://192.168.1.5:8168';
   
   // 生产环境 API 地址
-  //static const String prodBaseUrl = 'https://q168api.witherelax.com';
-  static const String prodBaseUrl = 'http://156.241.138.47';
+  static const String prodBaseUrl = 'https://q168api.witherelax.com';
+  //static const String prodBaseUrl = 'http://156.241.138.47';
   
   // 当前环境（默认开发环境）
   static bool isProduction = true;
