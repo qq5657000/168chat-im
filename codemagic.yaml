@@ -83,7 +83,7 @@ workflows:
     instance_type: mac_mini_m2
     # 与 Codemagic「Teams → Integrations → Developer Portal」里添加的 App Store Connect API key 名称一致（例如 codemagic）
     integrations:
-      app_store_connect: codemagic
+      app_store_connect: codemagic adm
     environment:
       flutter: stable
       xcode: 16.0
