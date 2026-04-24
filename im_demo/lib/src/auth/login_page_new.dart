@@ -364,16 +364,16 @@ class _LoginPageNewState extends State<LoginPageNew> {
                 const SizedBox(height: 16),
 
                 // 注册按钮
-                TextButton(
-                  onPressed: _isLoading ? null : _navigateToRegister,
-                  child: const Text(
-                    '还没有账号？立即注册',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: CommonColors.color_337eff,
-                    ),
-                  ),
-                ),
+                // TextButton(
+                //   onPressed: _isLoading ? null : _navigateToRegister,
+                //   child: const Text(
+                //     '还没有账号？立即注册',
+                //     style: TextStyle(
+                //       fontSize: 14,
+                //       color: CommonColors.color_337eff,
+                //     ),
+                //   ),
+                // ),
 
                 const SizedBox(height: 24),
 
