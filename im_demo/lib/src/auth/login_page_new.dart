@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:im_demo/src/auth/register_page.dart';
 import 'package:im_demo/src/config.dart';
@@ -10,6 +12,7 @@ import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:nim_chatkit/im_kit_client.dart';
 import 'package:nim_chatkit_callkit/nim_chatkit_callkit.dart';
 import 'package:nim_core_v2/nim_core.dart';
+import '../push/apns_token_store.dart';
 import '../services/auth_service.dart';
 import '../api/api_response.dart';
 import '../room/room_kit_service.dart';
@@ -124,6 +127,13 @@ class _LoginPageNewState extends State<LoginPageNew> {
             appKey: IMDemoConfig.AppKey,
             accountId: accid,
           );
+
+          if (Platform.isIOS &&
+              NimCore.instance.isInitialized &&
+              ApnsTokenStore.value != null) {
+            NimCore.instance.apnsService
+                .updateApnsToken(ApnsTokenStore.value!);
+          }
 
           Alog.d(tag: 'LoginPageNew', content: '✅ 云信 SDK 登录成功，跳转到主页');
 

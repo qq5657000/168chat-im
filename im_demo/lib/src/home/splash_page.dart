@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:im_demo/src/config.dart';
+import 'package:im_demo/src/push/apns_token_store.dart';
 import 'package:im_demo/src/home/home_page.dart';
 import 'package:im_demo/src/auth/login_page_new.dart';
 import 'package:im_demo/src/room/room_kit_service.dart';
@@ -46,10 +47,11 @@ class _SplashState extends State<SplashPage> {
   }
 
   void updateAPNsToken() {
+    final token = widget.deviceToken ?? ApnsTokenStore.value;
     if (NimCore.instance.isInitialized &&
         Platform.isIOS &&
-        widget.deviceToken != null) {
-      NimCore.instance.apnsService.updateApnsToken(widget.deviceToken!);
+        token != null) {
+      NimCore.instance.apnsService.updateApnsToken(token);
     }
   }
 

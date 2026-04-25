@@ -59,7 +59,8 @@ class NIMSDKOptionsConfig {
         shouldSyncStickTopSessionInfos: true,
         enableTeamMessageReadReceipt: true,
         sdkRootDir: '${directory.path}/NIMFlutter',
-        apnsCername: 'dis_im_flutter',
+        // 与云信控制台「iOS APNS P12推送证书」中的证书名称一致（例如 apns）
+        apnsCername: 'apns',
         pkCername: '',
         shouldConsiderRevokedMessageUnreadCount: true,
         shouldSyncUnreadCount: true,

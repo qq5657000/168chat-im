@@ -11,6 +11,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:im_demo/l10n/S.dart';
 import 'package:im_demo/src/home/home_page.dart';
+import 'package:im_demo/src/push/apns_token_store.dart';
 import 'package:im_demo/src/home/splash_page.dart';
 import 'package:im_demo/src/mine/user_info_page.dart';
 import 'package:netease_common_ui/common_ui.dart';
@@ -107,8 +108,10 @@ class _MainAppState extends State<MainApp> {
     if (Platform.isIOS) {
       MethodChannel(channelName).setMethodCallHandler((call) async {
         if (call.method == 'updateAPNsToken') {
+          final bytes = call.arguments as Uint8List;
+          ApnsTokenStore.value = bytes;
           setState(() {
-            _deviceToken = call.arguments as Uint8List;
+            _deviceToken = bytes;
           });
         }
         return null;
