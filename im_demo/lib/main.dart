@@ -110,6 +110,11 @@ class _MainAppState extends State<MainApp> {
         if (call.method == 'updateAPNsToken') {
           final bytes = call.arguments as Uint8List;
           ApnsTokenStore.value = bytes;
+          final tokenHex = bytes
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join()
+              .toUpperCase();
+          print('[iOSPush] receive deviceToken from native, length=${bytes.length}, token=$tokenHex');
           setState(() {
             _deviceToken = bytes;
           });

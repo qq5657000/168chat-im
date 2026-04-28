@@ -9,12 +9,14 @@ import UserNotifications
 @main
 @objc class AppDelegate: FlutterAppDelegate {
     var isForeground = false
+    private let pushLogTag = "[iOSPush]"
     
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         LocalServerManager.instance.startServer()
+        print("\(pushLogTag) didFinishLaunchingWithOptions, start APNs registration")
         // 注册空方法，防止dart调用时报错找不到方法
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let methodChannel = FlutterMethodChannel(name: "com.hestia.n168chat.app.flutter.im/channel",
@@ -38,7 +40,7 @@ import UserNotifications
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // Handle the notification tap event here
-        
+        print("\(pushLogTag) user tapped notification, userInfo=\(response.notification.request.content.userInfo)")
         let content = response.notification.request.content
 
             // 获取推送信息
@@ -80,9 +82,17 @@ import UserNotifications
             }
         completionHandler()
     }
+
+    override func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                         willPresent notification: UNNotification,
+                                         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("\(pushLogTag) willPresent notification in foreground, userInfo=\(notification.request.content.userInfo)")
+        completionHandler([.badge, .sound, .banner, .list])
+    }
     
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        print("\(pushLogTag) APNs register success, token=\(deviceTokenString)")
      
         //将deviceToken传到dart层
         let flutterData = FlutterStandardTypedData.init(bytes: deviceToken)
@@ -91,6 +101,13 @@ import UserNotifications
                                                   binaryMessenger: controller.binaryMessenger)
         methodChannel.invokeMethod("updateAPNsToken", arguments: flutterData)
     }
+
+    override func application(_ application: UIApplication,
+                              didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                              fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("\(pushLogTag) didReceiveRemoteNotification, userInfo=\(userInfo)")
+        completionHandler(.newData)
+    }
     
     func registerAPNS(){
         if #available(iOS 10.0, *) {
@@ -98,6 +115,10 @@ import UserNotifications
             center.delegate = self
             
             center.requestAuthorization(options: [.badge, .sound, .alert]) { grant, error in
+                if let error = error {
+                    print("\(self.pushLogTag) requestAuthorization error=\(error.localizedDescription)")
+                }
+                print("\(self.pushLogTag) requestAuthorization grant=\(grant)")
                 if grant == false {
                     print("please open push switch in setting")
                 }
@@ -106,6 +127,7 @@ import UserNotifications
             let setting = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
             UIApplication.shared.registerUserNotificationSettings(setting)
         }
+        print("\(pushLogTag) call registerForRemoteNotifications")
         UIApplication.shared.registerForRemoteNotifications()
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
@@ -117,6 +139,6 @@ import UserNotifications
     
     
     override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-//        NELog.infoLog("app delegate : ", desc: error.localizedDescription)
+        print("\(pushLogTag) APNs register failed, error=\(error.localizedDescription)")
     }
 }
