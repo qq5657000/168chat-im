@@ -87,7 +87,11 @@ import UserNotifications
                                          willPresent notification: UNNotification,
                                          withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         print("\(pushLogTag) willPresent notification in foreground, userInfo=\(notification.request.content.userInfo)")
-        completionHandler([.badge, .sound, .banner, .list])
+        if #available(iOS 14.0, *) {
+            completionHandler([.badge, .sound, .banner, .list])
+        } else {
+            completionHandler([.badge, .sound, .alert])
+        }
     }
     
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
