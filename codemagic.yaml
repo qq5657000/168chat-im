@@ -1,5 +1,6 @@
 # 蒲公英：当前 ios-ipa 为「无签名」产物，无法在真机完成安装（见下方说明）。
 # TestFlight：使用 ios-testflight，需在 Codemagic 绑定 App Store Connect API 密钥（integrations）并配置 App 记录。
+# Apple 要求上传必须使用 iOS 26 SDK（Xcode 26+）；勿再用 xcode: 16.0，否则 altool 返回 409 Validation failed。
 
 workflows:
   ios-ipa:
@@ -8,7 +9,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       flutter: stable
-      xcode: 16.0
+      xcode: latest
       cocoapods: default
       groups:
         - pgy  # 加上这一行！！！导入你存放变量的pgy分组
@@ -86,7 +87,7 @@ workflows:
       app_store_connect: codemagic adm
     environment:
       flutter: stable
-      xcode: 16.0
+      xcode: latest
       cocoapods: default
       ios_signing:
         distribution_type: app_store
