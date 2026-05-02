@@ -2,8 +2,13 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:im_demo/src/push/apns_token_store.dart';
 import 'package:netease_common_ui/utils/color_utils.dart';
 import 'package:netease_common_ui/widgets/common_browse_page.dart';
 
@@ -75,7 +80,30 @@ class AboutPage extends StatelessWidget {
                             url: 'https://netease.im/m/')));
               },
             ),
-            divider
+            divider,
+            if (Platform.isIOS) ...[
+              ListTile(
+                title: Text(
+                  '推送诊断（可复制）',
+                  style: _style,
+                ),
+                subtitle: Text(
+                  '云信证书名: apns\n'
+                  'Token: ${ApnsTokenStore.tokenPreview}\n'
+                  '上报: ${ApnsTokenStore.lastUpdateSummary}',
+                  style: const TextStyle(
+                      fontSize: 12, color: CommonColors.color_666666),
+                ),
+                trailing: const Icon(Icons.copy, size: 20),
+                onTap: () {
+                  final text =
+                      'apnsCername=apns\n${ApnsTokenStore.fullTokenHex.isNotEmpty ? "deviceToken=${ApnsTokenStore.fullTokenHex}" : "deviceToken=(无)"}\n${ApnsTokenStore.lastUpdateSummary}';
+                  Clipboard.setData(ClipboardData(text: text));
+                  Fluttertoast.showToast(msg: '已复制到剪贴板');
+                },
+              ),
+              divider,
+            ],
           ],
         ),
       ),

@@ -101,6 +101,11 @@ class _LoginPageState extends State<LoginPage> {
           final apnsResult = await NimCore.instance.apnsService
               .updateApnsToken(ApnsTokenStore.value!);
           print('[iOSPush] login_page updateApnsToken success=${apnsResult.isSuccess}, code=${apnsResult.code}, details=${apnsResult.errorDetails}');
+          ApnsTokenStore.recordUpdateResult(
+            success: apnsResult.isSuccess,
+            code: apnsResult.code,
+            details: apnsResult.errorDetails,
+          );
         }
 
         Alog.d(content: "登录成功，跳转到主页: $account");

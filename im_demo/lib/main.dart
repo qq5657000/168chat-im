@@ -115,6 +115,7 @@ class _MainAppState extends State<MainApp> {
               .join()
               .toUpperCase();
           print('[iOSPush] receive deviceToken from native, length=${bytes.length}, token=$tokenHex');
+          ApnsTokenStore.lastUpdateSummary = '已收到 token，待登录后上报';
           setState(() {
             _deviceToken = bytes;
           });

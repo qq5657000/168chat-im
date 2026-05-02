@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:nim_chatkit/repo/team_repo.dart';
 import 'package:nim_chatkit/services/message/nim_chat_cache.dart';
 import 'package:nim_core_v2/nim_core.dart';
@@ -111,9 +113,20 @@ class GroupSyncService {
       NimCore.instance.messageService.onReceiveMessages.listen((messages) {
         for (final msg in messages) {
           _handleManagerChangeNotification(msg);
+          _playIosForegroundMessageHint(msg);
         }
       }),
     );
+  }
+
+  /// Android 走通知栏时系统会响铃；iOS 前台通常不走系统通知，这里补一声短提示（非自己、非纯通知类消息）。
+  void _playIosForegroundMessageHint(NIMMessage message) {
+    if (!Platform.isIOS) return;
+    if (message.isSelf == true) return;
+    if (message.messageType == NIMMessageType.notification) return;
+    try {
+      SystemSound.play(SystemSoundType.click);
+    } catch (_) {}
   }
 
   /// 处理 AddManager / RemoveManager 群通知消息

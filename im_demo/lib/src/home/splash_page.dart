@@ -53,6 +53,11 @@ class _SplashState extends State<SplashPage> {
         token != null) {
       NimCore.instance.apnsService.updateApnsToken(token).then((result) {
         print('[iOSPush] updateApnsToken success=${result.isSuccess}, code=${result.code}, details=${result.errorDetails}');
+        ApnsTokenStore.recordUpdateResult(
+          success: result.isSuccess,
+          code: result.code,
+          details: result.errorDetails,
+        );
       });
     } else {
       print('[iOSPush] skip updateApnsToken, initialized=${NimCore.instance.isInitialized}, isIOS=${Platform.isIOS}, tokenNull=${token == null}');
