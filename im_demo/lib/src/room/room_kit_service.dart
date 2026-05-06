@@ -57,7 +57,10 @@ class RoomKitService {
     print('🔧 [RoomKitService] 开始初始化 NERoomKit, appKey=${appKey.substring(0, 4)}...');
     try {
       final result = await NERoomKit.instance.initialize(
-        NERoomKitOptions(appKey: appKey),
+        NERoomKitOptions(
+          appKey: appKey,
+          apnsCerName: 'apns',
+        ),
       );
       _initialized = result.isSuccess();
       print('${_initialized ? "✅" : "❌"} [RoomKitService] NERoomKit 初始化'
