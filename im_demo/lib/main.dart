@@ -104,6 +104,28 @@ class _MainAppState extends State<MainApp> {
 
   Uint8List? _deviceToken;
 
+  Future<void> _tryUploadApnsTokenIfPossible(
+    Uint8List bytes, {
+    required String reason,
+  }) async {
+    if (!Platform.isIOS) {
+      return;
+    }
+    if (!NimCore.instance.isInitialized) {
+      print('[iOSPush] skip updateApnsToken($reason), initialized=false');
+      return;
+    }
+    final result = await NimCore.instance.apnsService.updateApnsToken(bytes);
+    print(
+      '[iOSPush] main updateApnsToken($reason) success=${result.isSuccess}, code=${result.code}, details=${result.errorDetails}',
+    );
+    ApnsTokenStore.recordUpdateResult(
+      success: result.isSuccess,
+      code: result.code,
+      details: result.errorDetails,
+    );
+  }
+
   void _updateTokenIOS() {
     if (Platform.isIOS) {
       MethodChannel(channelName).setMethodCallHandler((call) async {
@@ -116,6 +138,7 @@ class _MainAppState extends State<MainApp> {
               .toUpperCase();
           print('[iOSPush] receive deviceToken from native, length=${bytes.length}, token=$tokenHex');
           ApnsTokenStore.lastUpdateSummary = '已收到 token，待登录后上报';
+          await _tryUploadApnsTokenIfPossible(bytes, reason: 'from_native_callback');
           setState(() {
             _deviceToken = bytes;
           });
