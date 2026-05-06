@@ -11,12 +11,12 @@ import 'package:nim_chatkit/im_kit_client.dart';
 
 class IMDemoConfig {
   //云信IM appKey（通信云产品）
-  static const AppKey = '1d80ea1fec058ba2730f514cebc801b9';
+  static const AppKey = '80e9ad2bf3924d4967acd1e6cf7fe514';
 
   /// 云信互动直播（NERoom/netease_roomkit）AppKey
   /// ⚠️ 与 IM AppKey 不同！需要在云信控制台「互动直播」产品中单独获取
   /// 控制台地址：https://app.netease.im → 互动直播 → 应用管理 → AppKey
-  static const RoomAppKey = '1d80ea1fec058ba2730f514cebc801b9';
+  static const RoomAppKey = '80e9ad2bf3924d4967acd1e6cf7fe514';
 
   //高德Android Key
   static const AMapAndroid = 'your amap android key';
