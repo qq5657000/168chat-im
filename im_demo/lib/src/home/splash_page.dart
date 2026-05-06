@@ -68,6 +68,17 @@ class _SplashState extends State<SplashPage> {
   void _doInit(String appKey) async {
     print('SplashPage: 开始初始化 SDK');
     try {
+      final roomAppKey = IMDemoConfig.RoomAppKey.isNotEmpty
+          ? IMDemoConfig.RoomAppKey
+          : appKey; // 若未配置互动直播 AppKey，回退用 IM AppKey（会导致 402）
+
+      // ⚠️ 初始化顺序：必须先 NERoomKit.initialize，再 IMKitClient.init。
+      // 底层共用 NIMSDK 时，若先 IM（含 apnsCername）再 NERoomKit，会出现约 1s 内两次
+      // 「SDK started」；第二次可能未带上 IM 推送配置，导致 APNs 绑定异常。
+      // 登录顺序仍保持：NERoomKit.login → IMKitClient.loginIMWithResult（见 _performLogin）。
+      await RoomKitService().initialize(roomAppKey);
+      print('SplashPage: NERoomKit 初始化完成');
+
       var options = await NIMSDKOptionsConfig.getSDKOptions(appKey);
 
       final initFuture = IMKitClient.init(appKey, options);
@@ -75,13 +86,7 @@ class _SplashState extends State<SplashPage> {
       final success = await Future.any([initFuture, timeoutFuture]);
 
       if (success) {
-        print('SplashPage: IM SDK 初始化成功');
-        // 同步初始化 NERoomKit（使用互动直播专属 AppKey，非 IM AppKey）
-        final roomAppKey = IMDemoConfig.RoomAppKey.isNotEmpty
-            ? IMDemoConfig.RoomAppKey
-            : appKey; // 若未配置互动直播 AppKey，回退用 IM AppKey（会导致 402）
-        await RoomKitService().initialize(roomAppKey);
-        print('SplashPage: NERoomKit 初始化完成');
+        print('SplashPage: IM SDK 初始化成功（含 iOS apnsCername，应为 NIM 最后一次启动）');
         await startLogin();
       } else {
         print('SplashPage: SDK 初始化超时');
