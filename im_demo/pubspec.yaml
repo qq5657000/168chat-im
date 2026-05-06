@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # iOS：CFBundleVersion 须严格递增；每次上传 TestFlight/App Store 请加大 + 号或升版本号
-version: 10.7.8
+version: 10.7.9
 
 environment:
   sdk: ">=2.16.1 <4.0.0"
